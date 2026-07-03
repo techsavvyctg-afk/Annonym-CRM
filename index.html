@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Annonym CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07090f;--s1:#0d1018;--s2:#131720;--s3:#1a1f2c;--s4:#222838;
+  --br:#252d40;--br2:#323d58;
+  --ac:#5b6af0;--ac2:#f06b8a;--ac3:#30d4a0;--ac4:#f5b942;--ac5:#4db3ff;
+  --t1:#eef0f8;--t2:#8891b0;--t3:#4a5270;--t4:#272e45;
+  --ok:#20c45a;--warn:#f59e0b;--err:#ef4444;
+  --sw:248px;--hh:58px;--r:10px;--rs:7px;--rl:14px;
+}
+body{font-family:'Epilogue',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow:hidden}
+h1,h2,h3,h4,.brand,.val,.modal-title,.ptitle{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
+
+/* ═══ AUTH ═══ */
+#auth{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:999;background:var(--bg)}
+.aglow{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.aglow::before{content:'';position:absolute;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(91,106,240,.12),transparent 60%);top:-250px;right:-200px}
+.aglow::after{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(48,212,160,.08),transparent 60%);bottom:-100px;left:-100px}
+.acard{position:relative;width:448px;background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:38px 42px;box-shadow:0 48px 120px rgba(0,0,0,.7)}
+.abrand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.aico{width:36px;height:36px;background:var(--ac);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff}
+.aname{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.3px}
+.atag{font-size:11px;color:var(--t3);margin-bottom:26px}
+.atabs{display:flex;background:var(--s2);border-radius:var(--rs);padding:3px;margin-bottom:22px}
+.atb{flex:1;padding:7px;border:none;border-radius:5px;background:transparent;color:var(--t2);font-family:'Epilogue',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.atb.on{background:var(--ac);color:#fff}
+.af label{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:5px;letter-spacing:.3px;text-transform:uppercase}
+.af input,.af select{width:100%;padding:10px 13px;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);color:var(--t1);font-family:'Epilogue',sans-serif;font-size:13px;outline:none;transition:border-color .2s;margin-bottom:14px}
+.af input:focus,.af select:focus{border-color:var(--ac);background:var(--s3)}
+.af input::placeholder{color:var(--t4)}
+.af select option{background:var(--s2)}
+.arow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.arow .fg{display:flex;flex-direction:column}
+.aerr{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--rs);padding:9px 12px;font-size:12px;color:#fca5a5;margin-bottom:12px;display:none}
+.aok{background:rgba(32,196,90,.08);border:1px solid rgba(32,196,90,.25);border-radius:var(--rs);padding:9px 12px;font-size:12px;color:#86efac;margin-bottom:12px;display:none}
+.btnauth{width:100%;padding:11px;background:var(--ac);border:none;border-radius:var(--rs);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:2px;letter-spacing:.3px}
+.btnauth:hover{background:#4a59e0;transform:translateY(-1px)}
+.ahint{font-size:11px;color:var(--t3);text-align:center;margin-top:14px}
+.ahint b{color:var(--ac)}
+
+/* ═══ APP ═══ */
+#app{display:none;height:100vh}
+.wrap{display:flex;height:100vh}
+
+/* ═══ SIDEBAR ═══ */
+.sb{width:var(--sw);background:var(--s1);border-right:1px solid var(--br);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100;overflow:hidden}
+.sbtop{padding:16px 14px 12px;border-bottom:1px solid var(--br)}
+.sbbrand{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.sbico{width:28px;height:28px;background:var(--ac);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#fff}
+.sbname{font-family:'Syne',sans-serif;font-size:15px;font-weight:800}
+.sbuser{display:flex;align-items:center;gap:9px;background:var(--s2);border-radius:var(--rs);padding:8px 10px}
+.ava{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:#fff;flex-shrink:0;font-size:12px}
+.sbuname{font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbrole{font-size:10px;color:var(--t3)}
+.rbadge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;display:inline-block;margin-top:1px}
+.rbadge.adm{background:rgba(91,106,240,.2);color:var(--ac)}
+.rbadge.usr{background:rgba(48,212,160,.15);color:var(--ac3)}
+.sbnav{flex:1;overflow-y:auto;padding:8px 6px}
+.nl{font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.2px;padding:8px 10px 3px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);color:var(--t2);cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;border:none;background:none;width:100%;text-align:left;position:relative}
+.ni:hover{background:var(--s2);color:var(--t1)}
+.ni.on{background:rgba(91,106,240,.12);color:var(--ac)}
+.ni.on::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:2px;background:var(--ac);border-radius:2px}
+.ni i{font-size:16px;flex-shrink:0}
+.nbadge{margin-left:auto;background:var(--ac2);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:7px}
+.nbadge.w{background:var(--warn)}
+.sbbot{padding:8px 6px;border-top:1px solid var(--br)}
+
+/* ═══ MAIN ═══ */
+.mn{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.hdr{height:var(--hh);background:var(--s1);border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.htitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex:1}
+.hsrch{display:flex;align-items:center;gap:7px;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:0 11px;height:32px;width:220px;transition:border-color .2s}
+.hsrch:focus-within{border-color:var(--ac)}
+.hsrch input{border:none;background:transparent;color:var(--t1);font-size:12px;outline:none;flex:1;font-family:'Epilogue',sans-serif}
+.hsrch input::placeholder{color:var(--t4)}
+.hacts{display:flex;gap:7px}
+.hbtn{width:32px;height:32px;border-radius:var(--rs);border:1px solid var(--br);background:var(--s2);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative;font-size:15px}
+.hbtn:hover{border-color:var(--ac);color:var(--ac)}
+.hbtn .dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;background:var(--ac2);border-radius:50%;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+.ct{flex:1;overflow-y:auto;padding:20px}
+.pg{display:none;animation:fi .18s ease}
+.pg.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ═══ COMPONENTS ═══ */
+.card{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:18px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ct2{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+.ca{font-size:11px;color:var(--ac);cursor:pointer;font-weight:600}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.ptitle{font-size:19px;font-weight:800}
+.psub{font-size:12px;color:var(--t2);margin-top:2px}
+
+/* BUTTONS */
+.btn{padding:7px 15px;border-radius:var(--rs);border:none;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;letter-spacing:.2px}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:#4a59e0;transform:translateY(-1px)}
+.btn-o{background:transparent;border:1px solid var(--br);color:var(--t2);font-family:'Epilogue',sans-serif;font-weight:500}.btn-o:hover{border-color:var(--ac);color:var(--ac)}
+.btn-e{background:rgba(245,185,66,.1);border:1px solid rgba(245,185,66,.2);color:var(--ac4)}.btn-e:hover{background:rgba(245,185,66,.2)}
+.btn-d{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171}.btn-d:hover{background:rgba(239,68,68,.2)}
+.btn-s{background:rgba(48,212,160,.1);border:1px solid rgba(48,212,160,.2);color:var(--ac3)}.btn-s:hover{background:rgba(48,212,160,.2)}
+
+/* STATUS */
+.bs{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.bs::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.bs-ok{background:rgba(32,196,90,.1);color:#4ade80}
+.bs-w{background:rgba(245,158,11,.1);color:#fbbf24}
+.bs-e{background:rgba(239,68,68,.1);color:#f87171}
+.bs-i{background:rgba(77,179,255,.1);color:var(--ac5)}
+.bs-p{background:rgba(91,106,240,.1);color:#818cf8}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.sc{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:14px;position:relative;overflow:hidden}
+.sico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:9px}
+.val{font-size:21px;font-weight:800;line-height:1}
+.slbl{font-size:11px;color:var(--t2);margin-top:3px}
+.sch{font-size:10px;margin-top:5px;font-weight:600;display:flex;align-items:center;gap:3px}
+.up{color:var(--ok)}.dn{color:var(--err)}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+thead th{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;padding:7px 10px;text-align:left;border-bottom:1px solid var(--br);white-space:nowrap}
+tbody td{padding:9px 10px;font-size:12px;color:var(--t2);border-bottom:1px solid rgba(37,45,64,.5);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--s2)}
+.tdm{font-weight:600;color:var(--t1);font-size:12px}
+.tda{display:flex;gap:5px;align-items:center}
+
+/* FORMS */
+.fi{padding:9px 12px;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);color:var(--t1);font-size:13px;outline:none;font-family:'Epilogue',sans-serif;transition:border-color .2s;width:100%}
+.fi:focus{border-color:var(--ac);background:var(--s3)}
+.fi::placeholder{color:var(--t4)}
+.fi option{background:var(--s2)}
+textarea.fi{resize:vertical;min-height:70px}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:10px;font-weight:700;color:var(--t2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+
+/* PROGRESS */
+.pb{height:4px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:6px}
+.pf{height:100%;border-radius:3px}
+
+/* TOOLBAR */
+.tb{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.srch{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--br);border-radius:var(--rs);padding:0 10px;height:30px;flex:1;max-width:260px;transition:border-color .2s}
+.srch:focus-within{border-color:var(--ac)}
+.srch input{border:none;background:transparent;color:var(--t1);font-size:12px;outline:none;font-family:'Epilogue',sans-serif;flex:1}
+.fb{padding:5px 11px;border:1px solid var(--br);border-radius:var(--rs);background:var(--s2);color:var(--t2);cursor:pointer;font-size:11px;transition:all .15s;font-family:'Epilogue',sans-serif}
+.fb:hover,.fb.on{border-color:var(--ac);color:var(--ac);background:rgba(91,106,240,.08)}
+
+/* PIPELINE */
+.pcols{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.pcol{background:var(--s2);border-radius:var(--r);padding:10px;min-height:260px}
+.pcolh{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--t2);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+.pcnt{background:var(--s3);color:var(--t2);padding:1px 6px;border-radius:7px;font-size:10px}
+.dc{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:10px;margin-bottom:7px;cursor:default;transition:border-color .15s}
+.dc:hover{border-color:var(--br2)}
+.dcn{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.dcc{font-size:10px;color:var(--t2);margin-bottom:6px}
+.dcv{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--ac3)}
+.dcacts{display:flex;gap:4px;margin-top:6px}
+
+/* CALENDAR */
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--br);border:1px solid var(--br);border-radius:var(--r);overflow:hidden}
+.cdh{background:var(--s2);padding:7px;text-align:center;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.cd{background:var(--s1);padding:6px;min-height:68px;cursor:pointer;transition:background .12s;position:relative}
+.cd:hover{background:var(--s2)}
+.cd.om .cdn{color:var(--t4)}
+.cd.td .cdn{background:var(--ac);color:#fff;border-radius:50%;width:21px;height:21px;display:flex;align-items:center;justify-content:center}
+.cdn{font-size:11px;font-weight:600;color:var(--t2);width:21px;height:21px;display:flex;align-items:center;justify-content:center}
+.cev{font-size:9px;padding:1px 5px;border-radius:3px;margin-top:2px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cev:hover{opacity:.8}
+.c1{background:rgba(91,106,240,.2);color:#818cf8}
+.c2{background:rgba(48,212,160,.15);color:var(--ac3)}
+.c3{background:rgba(245,185,66,.15);color:var(--ac4)}
+.c4{background:rgba(240,107,138,.15);color:var(--ac2)}
+
+/* SETTINGS */
+.stg{display:grid;grid-template-columns:190px 1fr;gap:16px}
+.snav{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:6px}
+.sni{padding:8px 11px;border-radius:var(--rs);font-size:12px;cursor:pointer;color:var(--t2);display:flex;align-items:center;gap:7px;transition:all .15s}
+.sni:hover{background:var(--s2);color:var(--t1)}
+.sni.on{background:rgba(91,106,240,.12);color:var(--ac)}
+.sct{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:20px}
+.ss{margin-bottom:20px}
+.ss-t{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid var(--br);color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(37,45,64,.4)}
+.sr:last-child{border-bottom:none}
+.sl{font-size:13px;color:var(--t1)}
+.sd{font-size:11px;color:var(--t2);margin-top:1px}
+.tgl{width:38px;height:21px;border-radius:11px;background:var(--s3);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.tgl.on{background:var(--ac)}
+.tgl::after{content:'';position:absolute;width:15px;height:15px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s}
+.tgl.on::after{transform:translateX(17px)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.mo.on{display:flex}
+.mb{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:24px;width:500px;max-height:85vh;overflow-y:auto;animation:mfi .18s ease}
+@keyframes mfi{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--br)}
+.modal-title{font-size:15px;font-weight:700}
+.mclose{width:26px;height:26px;border-radius:5px;border:1px solid var(--br);background:transparent;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.mclose:hover{border-color:var(--err);color:var(--err)}
+.mfooter{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--br)}
+
+/* NOTIFICATIONS */
+.np{position:fixed;right:12px;top:65px;width:310px;background:var(--s1);border:1px solid var(--br);border-radius:var(--r);box-shadow:0 16px 50px rgba(0,0,0,.6);z-index:200;display:none;animation:fi .15s ease}
+.np.on{display:block}
+.nph{padding:12px 14px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.npt{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+.npi{padding:11px 14px;border-bottom:1px solid rgba(37,45,64,.4);display:flex;gap:8px;transition:background .12s}
+.npi:last-child{border-bottom:none}
+.npi:hover{background:var(--s2)}
+.npdot{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:4px}
+.nptxt{font-size:11px;color:var(--t2);line-height:1.4}
+.nptxt strong{color:var(--t1)}
+.nptm{font-size:10px;color:var(--t3);margin-top:1px}
+
+/* EMPTY STATE */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;color:var(--t3);text-align:center}
+.empty i{font-size:48px;margin-bottom:12px;opacity:.4}
+.empty p{font-size:13px;margin-bottom:16px}
+
+/* CONTACT CARDS */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px}
+.ccard{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:16px;text-align:center;transition:border-color .15s}
+.ccard:hover{border-color:var(--br2)}
+.cava{width:46px;height:46px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff}
+.ccn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:1px}
+.ccr{font-size:11px;color:var(--t2);margin-bottom:8px}
+.ccacts{display:flex;gap:5px;justify-content:center;margin-top:10px}
+
+/* TEAM */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.tcard{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;transition:border-color .15s}
+.tcard:hover{border-color:var(--br2)}
+
+/* TASK BOARD */
+.tkboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tkcol{background:var(--s2);border-radius:var(--r);padding:12px;min-height:240px}
+.tkcolh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px}
+.tkhd{font-family:'Syne',sans-serif;font-size:12px;font-weight:700}
+.tkcnt{font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px}
+.tkcard{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:10px;margin-bottom:8px;transition:border-color .15s}
+.tkcard:hover{border-color:var(--br2)}
+.tkn{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.tko{font-size:10px;color:var(--t2);margin-bottom:6px}
+.tkacts{display:flex;gap:4px;margin-top:7px}
+
+/* ADMIN */
+.uradmin{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--rs);border:1px solid var(--br);background:var(--s2);margin-bottom:8px}
+.uacts{display:flex;gap:5px}
+.uinfo{flex:1;min-width:0}
+.un{font-size:12px;font-weight:600;color:var(--t1)}
+.ue{font-size:10px;color:var(--t2)}
+
+/* AUDIT */
+.alog{display:flex;flex-direction:column;gap:1px}
+.alogitem{display:flex;gap:10px;padding:9px 12px;border-radius:var(--rs);transition:background .12s;font-size:11px}
+.alogitem:hover{background:var(--s2)}
+.alogtime{color:var(--t3);width:120px;flex-shrink:0}
+.aloguser{color:var(--ac);width:130px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alogact{color:var(--t1);flex:1}
+.alogmod{color:var(--t2);width:90px;flex-shrink:0}
+
+/* REPORT CARDS */
+.rcards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.rcard{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}
+.rcard:hover{border-color:var(--ac)}
+.rcard-ico{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+
+/* CHART */
+.cbars{display:flex;align-items:flex-end;gap:3px;height:140px}
+.cbar{flex:1;border-radius:3px 3px 0 0;transition:opacity .15s;cursor:default;min-width:0}
+
+/* DASH GRID */
+.dg{display:grid;gap:14px;margin-bottom:14px}
+.dg-2{grid-template-columns:3fr 2fr}
+.dg-22{grid-template-columns:1fr 1fr}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--s3);border:1px solid var(--br);border-radius:var(--rs);padding:11px 16px;font-size:12px;color:var(--t1);z-index:999;display:none;animation:fi .2s ease;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:300px}
+.toast.on{display:block}
+.toast.ok{border-color:rgba(32,196,90,.3);background:rgba(32,196,90,.08)}
+.toast.err{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+
+@media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr)}.dg-2,.dg-22{grid-template-columns:1fr}.pcols{grid-template-columns:repeat(2,1fr)}.tkboard{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ AUTH ════════════════ -->
+<div id="auth">
+  <div class="aglow"></div>
+  <div class="acard">
+    <div class="abrand">
+      <div class="aico">A</div>
+      <div class="aname">Annonym CRM</div>
+    </div>
+    <div class="atag">Sistema de gestión comercial</div>
+    <div class="atabs">
+      <button class="atb on" onclick="swTab('login',this)">Iniciar sesión</button>
+      <button class="atb" onclick="swTab('reg',this)">Crear cuenta</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="fLogin">
+      <div class="aerr" id="lerr"></div>
+      <div class="af">
+        <label>Correo electrónico</label>
+        <input id="lem" type="email" placeholder="tu@correo.com">
+        <label>Contraseña</label>
+        <input id="lpw" type="password" placeholder="••••••••">
+        <button class="btnauth" onclick="doLogin()">Ingresar al sistema</button>
+      </div>
+      <div class="ahint" id="lhint"></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="fReg" style="display:none">
+      <div class="aerr" id="rerr"></div>
+      <div class="aok" id="rok"></div>
+      <div class="af">
+        <div class="arow">
+          <div class="fg"><label>Nombre</label><input id="rfn" placeholder="Tu nombre" style="margin-bottom:0"></div>
+          <div class="fg"><label>Apellido</label><input id="rln" placeholder="Apellido" style="margin-bottom:0"></div>
+        </div>
+        <div style="margin-top:14px"></div>
+        <label>Correo electrónico</label>
+        <input id="rem" type="email" placeholder="tu@correo.com">
+        <label>Empresa</label>
+        <input id="rco" placeholder="Nombre de tu empresa">
+        <label>Rol</label>
+        <select id="rrol">
+          <option value="user">Usuario general</option>
+          <option value="admin">Administrador</option>
+        </select>
+        <label>Contraseña <span style="color:var(--t3);font-size:9px">(mín. 6 caracteres)</span></label>
+        <input id="rp1" type="password" placeholder="••••••••">
+        <label>Confirmar contraseña</label>
+        <input id="rp2" type="password" placeholder="••••••••">
+        <button class="btnauth" onclick="doReg()">Crear mi cuenta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="app">
+<div class="wrap">
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sbtop">
+    <div class="sbbrand"><div class="sbico">A</div><div class="sbname">Annonym</div></div>
+    <div class="sbuser">
+      <div class="ava" id="sbava" style="width:28px;height:28px;background:linear-gradient(135deg,var(--ac),var(--ac2))">?</div>
+      <div style="flex:1;min-width:0">
+        <div class="sbuname" id="sbuname">—</div>
+        <div class="sbrole" id="sbrole">—</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sbnav">
+    <div class="nl">Principal</div>
+    <button class="ni on" onclick="goPg('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
+    <button class="ni" onclick="goPg('analytics',this)"><i class="ti ti-chart-line"></i>Analytics</button>
+    <button class="ni" onclick="goPg('calendar',this)"><i class="ti ti-calendar"></i>Calendario</button>
+    <div class="nl">Ventas</div>
+    <button class="ni" onclick="goPg('pipeline',this)"><i class="ti ti-topology-star"></i>Pipeline <span class="nbadge" id="nbPipe">0</span></button>
+    <button class="ni" onclick="goPg('contacts',this)"><i class="ti ti-users"></i>Contactos</button>
+    <button class="ni" onclick="goPg('invoices',this)"><i class="ti ti-receipt"></i>Facturas</button>
+    <button class="ni" onclick="goPg('products',this)"><i class="ti ti-box"></i>Productos</button>
+    <div class="nl">Operaciones</div>
+    <button class="ni" onclick="goPg('tasks',this)"><i class="ti ti-checklist"></i>Tareas <span class="nbadge w" id="nbTask">0</span></button>
+    <button class="ni" onclick="goPg('reports',this)"><i class="ti ti-file-analytics"></i>Reportes</button>
+    <button class="ni" onclick="goPg('team',this)"><i class="ti ti-user-circle"></i>Equipo</button>
+    <div id="adminNav" style="display:none">
+      <div class="nl" style="color:var(--ac)">⚡ Administración</div>
+      <button class="ni" onclick="goPg('adminUsers',this)"><i class="ti ti-shield-check"></i>Usuarios & Roles</button>
+      <button class="ni" onclick="goPg('adminAudit',this)"><i class="ti ti-eye"></i>Auditoría</button>
+    </div>
+  </nav>
+  <div class="sbbot">
+    <button class="ni" onclick="goPg('settings',this)"><i class="ti ti-settings"></i>Configuración</button>
+    <button class="ni" style="color:var(--err)" onclick="doLogout()"><i class="ti ti-logout"></i>Cerrar sesión</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="mn">
+  <header class="hdr">
+    <div class="htitle" id="htitle">Dashboard</div>
+    <div class="hsrch"><i class="ti ti-search" style="color:var(--t3);font-size:13px"></i><input placeholder="Buscar..." id="globalSearch" oninput="globalSrch(this.value)"></div>
+    <div class="hacts">
+      <div class="hbtn" onclick="toggleNp()"><i class="ti ti-bell"></i><span class="dot" id="notifDot">0</span></div>
+      <div class="hbtn" onclick="goPg('settings',null)"><i class="ti ti-settings"></i></div>
+      <div class="ava hbtn" id="hdrAva" style="background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;width:32px;height:32px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700">?</div>
+    </div>
+  </header>
+
+  <!-- Notifs -->
+  <div class="np" id="np">
+    <div class="nph"><div class="npt">Notificaciones</div><span style="font-size:10px;color:var(--ac);cursor:pointer" onclick="clearNotifs()">Limpiar</span></div>
+    <div id="npList"><div class="empty" style="padding:20px"><i class="ti ti-bell-off" style="font-size:28px;margin-bottom:6px"></i><p>Sin notificaciones</p></div></div>
+  </div>
+
+  <div class="ct">
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div class="pg on" id="pg-dashboard">
+      <div class="ph">
+        <div><div class="ptitle">Hola, <span id="ugreet">—</span> 👋</div><div class="psub" id="dashSub">Resumen del sistema</div></div>
+        <button class="btn btn-p" id="dashCta" onclick="openM('mDeal')"><i class="ti ti-plus"></i>Nuevo negocio</button>
+      </div>
+      <div class="sg">
+        <div class="sc"><div class="sico" style="background:rgba(91,106,240,.15);color:var(--ac)"><i class="ti ti-currency-dollar"></i></div><div class="val" id="dRev">$0</div><div class="slbl">Ingresos totales</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(48,212,160,.15);color:var(--ac3)"><i class="ti ti-users"></i></div><div class="val" id="dCli">0</div><div class="slbl">Contactos</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(245,185,66,.15);color:var(--ac4)"><i class="ti ti-topology-star"></i></div><div class="val" id="dDeals">0</div><div class="slbl">Deals activos</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(240,107,138,.15);color:var(--ac2)"><i class="ti ti-receipt"></i></div><div class="val" id="dInv">0</div><div class="slbl">Facturas</div></div>
+      </div>
+      <div class="dg dg-2">
+        <div class="card">
+          <div class="ch"><div class="ct2">Últimos deals</div><span class="ca" onclick="goPg('pipeline',null)">Ver pipeline →</span></div>
+          <div id="dashDeals"><div class="empty" style="padding:24px"><i class="ti ti-topology-star"></i><p>No hay deals registrados aún.<br>Crea tu primer negocio.</p><button class="btn btn-p" onclick="openM('mDeal')"><i class="ti ti-plus"></i>Crear deal</button></div></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct2">Actividad reciente</div></div>
+          <div id="dashAct"><div class="empty" style="padding:24px"><i class="ti ti-activity"></i><p>Aún no hay actividad registrada.</p></div></div>
+        </div>
+      </div>
+      <div class="dg dg-22">
+        <div class="card">
+          <div class="ch"><div class="ct2">Últimas facturas</div><span class="ca" onclick="goPg('invoices',null)">Ver todas →</span></div>
+          <div id="dashInv"><div class="empty" style="padding:20px"><i class="ti ti-receipt"></i><p>Sin facturas registradas.</p></div></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct2">Tareas pendientes</div><span class="ca" onclick="goPg('tasks',null)">Ver tareas →</span></div>
+          <div id="dashTasks"><div class="empty" style="padding:20px"><i class="ti ti-checklist"></i><p>Sin tareas pendientes.</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ANALYTICS ══════════ -->
+    <div class="pg" id="pg-analytics">
+      <div class="ph"><div><div class="ptitle">Analytics</div><div class="psub">Métricas del sistema</div></div></div>
+      <div class="sg">
+        <div class="sc"><div class="sico" style="background:rgba(91,106,240,.15);color:var(--ac)"><i class="ti ti-receipt"></i></div><div class="val" id="aPaid">$0</div><div class="slbl">Cobrado</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(245,158,11,.15);color:var(--warn)"><i class="ti ti-clock"></i></div><div class="val" id="aPend">$0</div><div class="slbl">Pendiente</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(239,68,68,.15);color:var(--err)"><i class="ti ti-alert-triangle"></i></div><div class="val" id="aExp">$0</div><div class="slbl">Vencido</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(48,212,160,.15);color:var(--ac3)"><i class="ti ti-checklist"></i></div><div class="val" id="aDone">0</div><div class="slbl">Tareas completadas</div></div>
+      </div>
+      <div class="dg dg-22">
+        <div class="card"><div class="ch"><div class="ct2">Deals por etapa</div></div><div id="aByStage" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div></div>
+        <div class="card"><div class="ch"><div class="ct2">Contactos por tipo</div></div><div id="aByType" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct2">Pipeline por valor ($)</div></div>
+        <div class="cbars" id="aChart"></div>
+        <div style="display:flex;justify-content:space-around;margin-top:6px" id="aChartLbls"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ CALENDARIO ══════════ -->
+    <div class="pg" id="pg-calendar">
+      <div class="ph">
+        <div><div class="ptitle">Calendario</div><div class="psub">Gestión de eventos</div></div>
+        <button class="btn btn-p" onclick="openM('mEvent')"><i class="ti ti-plus"></i>Nuevo evento</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 255px;gap:14px">
+        <div class="card" style="padding:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="hbtn" onclick="chMo(-1)"><i class="ti ti-chevron-left"></i></div>
+              <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700" id="calLbl"></div>
+              <div class="hbtn" onclick="chMo(1)"><i class="ti ti-chevron-right"></i></div>
+            </div>
+            <div style="font-size:11px;color:var(--t2)">Clic en un día para agregar evento</div>
+          </div>
+          <div class="cg" id="calGrid">
+            <div class="cdh">Dom</div><div class="cdh">Lun</div><div class="cdh">Mar</div>
+            <div class="cdh">Mié</div><div class="cdh">Jue</div><div class="cdh">Vie</div><div class="cdh">Sáb</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="ch"><div class="ct2">Eventos del mes</div></div>
+            <div id="evtList"><div class="empty" style="padding:16px"><i class="ti ti-calendar-off" style="font-size:28px;margin-bottom:6px"></i><p>Sin eventos este mes.</p></div></div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ct2">Colores</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px"><div style="width:8px;height:8px;border-radius:50%;background:var(--ac)"></div><span style="color:var(--t2)">Reuniones</span></div>
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px"><div style="width:8px;height:8px;border-radius:50%;background:var(--ac3)"></div><span style="color:var(--t2)">Revisiones</span></div>
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px"><div style="width:8px;height:8px;border-radius:50%;background:var(--ac4)"></div><span style="color:var(--t2)">Llamadas</span></div>
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px"><div style="width:8px;height:8px;border-radius:50%;background:var(--ac2)"></div><span style="color:var(--t2)">Demos</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PIPELINE ══════════ -->
+    <div class="pg" id="pg-pipeline">
+      <div class="ph">
+        <div><div class="ptitle">Pipeline de Ventas</div><div class="psub" id="pipeSub">Sin deals registrados</div></div>
+        <button class="btn btn-p" onclick="openM('mDeal')"><i class="ti ti-plus"></i>Nuevo deal</button>
+      </div>
+      <div class="pcols" id="pipeCols"></div>
+    </div>
+
+    <!-- ══════════ CONTACTOS ══════════ -->
+    <div class="pg" id="pg-contacts">
+      <div class="ph">
+        <div><div class="ptitle">Contactos</div><div class="psub" id="contSub">Sin contactos</div></div>
+        <button class="btn btn-p" onclick="openM('mContact')"><i class="ti ti-user-plus"></i>Agregar</button>
+      </div>
+      <div class="tb">
+        <div class="srch"><i class="ti ti-search" style="color:var(--t3);font-size:12px"></i><input placeholder="Buscar..." oninput="srchContacts(this.value)"></div>
+        <button class="fb on" onclick="filtCont('all',this)">Todos</button>
+        <button class="fb" onclick="filtCont('client',this)">Clientes</button>
+        <button class="fb" onclick="filtCont('prospect',this)">Prospectos</button>
+        <button class="fb" onclick="filtCont('supplier',this)">Proveedores</button>
+      </div>
+      <div class="cgrid" id="contGrid"></div>
+    </div>
+
+    <!-- ══════════ FACTURAS ══════════ -->
+    <div class="pg" id="pg-invoices">
+      <div class="ph">
+        <div><div class="ptitle">Facturas</div><div class="psub" id="invSub">Sin facturas</div></div>
+        <button class="btn btn-p" onclick="openM('mInvoice')"><i class="ti ti-plus"></i>Nueva factura</button>
+      </div>
+      <div class="sg">
+        <div class="sc"><div class="sico" style="background:rgba(32,196,90,.15);color:var(--ok)"><i class="ti ti-check"></i></div><div class="val" id="invPaid">$0</div><div class="slbl">Cobrado</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(245,158,11,.15);color:var(--warn)"><i class="ti ti-clock"></i></div><div class="val" id="invPend">$0</div><div class="slbl">Pendiente</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(239,68,68,.15);color:var(--err)"><i class="ti ti-alert-triangle"></i></div><div class="val" id="invExp">$0</div><div class="slbl">Vencido</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(91,106,240,.15);color:var(--ac)"><i class="ti ti-receipt"></i></div><div class="val" id="invTot">0</div><div class="slbl">Total</div></div>
+      </div>
+      <div class="card">
+        <div class="tb" style="margin-bottom:12px">
+          <div class="srch"><i class="ti ti-search" style="color:var(--t3);font-size:12px"></i><input placeholder="Buscar factura..." oninput="srchInv(this.value)"></div>
+          <button class="fb on" onclick="filtInv('all',this)">Todas</button>
+          <button class="fb" onclick="filtInv('Pagado',this)">Pagadas</button>
+          <button class="fb" onclick="filtInv('Pendiente',this)">Pendientes</button>
+          <button class="fb" onclick="filtInv('Vencido',this)">Vencidas</button>
+        </div>
+        <div class="tbl-wrap"><table id="invTable">
+          <thead><tr><th>#</th><th>Cliente</th><th>Emisión</th><th>Vencimiento</th><th>Monto</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="invTbody"></tbody>
+        </table></div>
+        <div id="invEmpty" style="display:none"><div class="empty"><i class="ti ti-receipt"></i><p>Sin facturas registradas.<br>Crea tu primera factura.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════ PRODUCTOS ══════════ -->
+    <div class="pg" id="pg-products">
+      <div class="ph">
+        <div><div class="ptitle">Productos</div><div class="psub" id="prodSub">Sin productos</div></div>
+        <button class="btn btn-p" id="btnNewProd" onclick="openM('mProduct')"><i class="ti ti-plus"></i>Nuevo producto</button>
+      </div>
+      <div class="card">
+        <div class="tb" style="margin-bottom:12px">
+          <div class="srch"><i class="ti ti-search" style="color:var(--t3);font-size:12px"></i><input placeholder="Buscar producto..." oninput="srchProd(this.value)"></div>
+        </div>
+        <div class="tbl-wrap"><table id="prodTable">
+          <thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="prodTbody"></tbody>
+        </table></div>
+        <div id="prodEmpty"><div class="empty"><i class="ti ti-box"></i><p>Sin productos registrados.<br>Agrega tu primer producto.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════ TAREAS ══════════ -->
+    <div class="pg" id="pg-tasks">
+      <div class="ph">
+        <div><div class="ptitle">Tareas</div><div class="psub">Gestión de actividades</div></div>
+        <button class="btn btn-p" onclick="openM('mTask')"><i class="ti ti-plus"></i>Nueva tarea</button>
+      </div>
+      <div class="tkboard">
+        <div class="tkcol">
+          <div class="tkcolh" style="border-bottom:2px solid var(--warn)"><div class="tkhd" style="color:var(--warn)">Pendientes</div><span class="tkcnt" style="background:rgba(245,158,11,.1);color:var(--warn)" id="tkPCnt">0</span></div>
+          <div id="tkPend"></div>
+          <div id="tkPendEmpty" class="empty" style="padding:16px"><i class="ti ti-checklist" style="font-size:22px"></i><p style="font-size:11px">Sin tareas pendientes</p></div>
+        </div>
+        <div class="tkcol">
+          <div class="tkcolh" style="border-bottom:2px solid var(--ac)"><div class="tkhd" style="color:var(--ac)">En progreso</div><span class="tkcnt" style="background:rgba(91,106,240,.1);color:var(--ac)" id="tkWCnt">0</span></div>
+          <div id="tkWork"></div>
+          <div id="tkWorkEmpty" class="empty" style="padding:16px"><i class="ti ti-clock" style="font-size:22px"></i><p style="font-size:11px">Sin tareas en progreso</p></div>
+        </div>
+        <div class="tkcol">
+          <div class="tkcolh" style="border-bottom:2px solid var(--ok)"><div class="tkhd" style="color:var(--ok)">Completadas</div><span class="tkcnt" style="background:rgba(32,196,90,.1);color:var(--ok)" id="tkDCnt">0</span></div>
+          <div id="tkDone"></div>
+          <div id="tkDoneEmpty" class="empty" style="padding:16px"><i class="ti ti-check" style="font-size:22px"></i><p style="font-size:11px">Sin tareas completadas</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ REPORTES ══════════ -->
+    <div class="pg" id="pg-reports">
+      <div class="ph"><div><div class="ptitle">Reportes</div><div class="psub">Resúmenes generados automáticamente</div></div></div>
+      <div class="rcards">
+        <div class="rcard" onclick="goPg('analytics',null)"><div class="rcard-ico" style="background:rgba(91,106,240,.15);color:var(--ac)"><i class="ti ti-chart-bar"></i></div><div><div class="ct2">Reporte de Ventas</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Deals, pipeline y conversión</div></div><i class="ti ti-chevron-right" style="margin-left:auto;color:var(--t3)"></i></div>
+        <div class="rcard" onclick="goPg('invoices',null)"><div class="rcard-ico" style="background:rgba(48,212,160,.15);color:var(--ac3)"><i class="ti ti-receipt"></i></div><div><div class="ct2">Reporte Financiero</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Facturas, cobros y pendientes</div></div><i class="ti ti-chevron-right" style="margin-left:auto;color:var(--t3)"></i></div>
+        <div class="rcard" onclick="goPg('contacts',null)"><div class="rcard-ico" style="background:rgba(245,185,66,.15);color:var(--ac4)"><i class="ti ti-users"></i></div><div><div class="ct2">Reporte de Clientes</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Contactos y segmentación</div></div><i class="ti ti-chevron-right" style="margin-left:auto;color:var(--t3)"></i></div>
+        <div class="rcard" onclick="goPg('tasks',null)"><div class="rcard-ico" style="background:rgba(240,107,138,.15);color:var(--ac2)"><i class="ti ti-checklist"></i></div><div><div class="ct2">Reporte de Equipo</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Tareas y productividad</div></div><i class="ti ti-chevron-right" style="margin-left:auto;color:var(--t3)"></i></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct2">Resumen ejecutivo</div></div>
+        <div id="repSummary"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ EQUIPO ══════════ -->
+    <div class="pg" id="pg-team">
+      <div class="ph">
+        <div><div class="ptitle">Equipo</div><div class="psub" id="teamSub">Miembros registrados</div></div>
+        <button class="btn btn-p" id="btnInvite" onclick="openM('mAddUser')"><i class="ti ti-user-plus"></i>Agregar usuario</button>
+      </div>
+      <div class="tgrid" id="teamGrid"></div>
+      <div id="teamEmpty" style="display:none"><div class="empty"><i class="ti ti-user-circle"></i><p>Sin miembros de equipo.<br>Registra usuarios para verlos aquí.</p></div></div>
+    </div>
+
+    <!-- ══════════ ADMIN: USUARIOS ══════════ -->
+    <div class="pg" id="pg-adminUsers">
+      <div class="ph">
+        <div><div class="ptitle">⚡ Usuarios & Roles</div><div class="psub">Control total de accesos</div></div>
+        <button class="btn btn-p" onclick="openM('mAddUser')"><i class="ti ti-user-plus"></i>Agregar usuario</button>
+      </div>
+      <div class="sg" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sc"><div class="sico" style="background:rgba(91,106,240,.15);color:var(--ac)"><i class="ti ti-shield-check"></i></div><div class="val" id="auAdmins">0</div><div class="slbl">Administradores</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(48,212,160,.15);color:var(--ac3)"><i class="ti ti-users"></i></div><div class="val" id="auUsers">0</div><div class="slbl">Usuarios generales</div></div>
+        <div class="sc"><div class="sico" style="background:rgba(245,158,11,.15);color:var(--warn)"><i class="ti ti-user-off"></i></div><div class="val" id="auInact">0</div><div class="slbl">Inactivos</div></div>
+      </div>
+      <div class="card"><div class="ch"><div class="ct2">Gestión de usuarios</div></div><div id="auList"></div></div>
+    </div>
+
+    <!-- ══════════ ADMIN: AUDITORÍA ══════════ -->
+    <div class="pg" id="pg-adminAudit">
+      <div class="ph"><div><div class="ptitle">⚡ Auditoría</div><div class="psub">Registro de toda la actividad</div></div><button class="btn btn-o" onclick="LS('audit')&&exportAudit()"><i class="ti ti-download"></i>Exportar</button></div>
+      <div class="card">
+        <div class="alog" id="auditLog"></div>
+        <div id="auditEmpty"><div class="empty"><i class="ti ti-eye"></i><p>Sin registros de auditoría aún.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════ CONFIGURACIÓN ══════════ -->
+    <div class="pg" id="pg-settings">
+      <div class="ph"><div><div class="ptitle">Configuración</div><div class="psub">Preferencias de tu cuenta</div></div></div>
+      <div class="stg">
+        <div class="snav">
+          <div class="sni on" onclick="swSet(this,'sPerfil')"><i class="ti ti-user"></i>Mi perfil</div>
+          <div class="sni" onclick="swSet(this,'sEmp')"><i class="ti ti-building"></i>Empresa</div>
+          <div class="sni" onclick="swSet(this,'sNotif')"><i class="ti ti-bell"></i>Notificaciones</div>
+          <div class="sni" onclick="swSet(this,'sSeg')"><i class="ti ti-lock"></i>Seguridad</div>
+        </div>
+        <div class="sct">
+          <div id="sPerfil">
+            <div class="ss"><div class="ss-t">Información personal</div>
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <div class="ava" id="setAva" style="width:52px;height:52px;font-size:18px;background:linear-gradient(135deg,var(--ac),var(--ac2))">?</div>
+                <div><button class="btn btn-o" style="font-size:11px">Cambiar foto</button><div style="font-size:10px;color:var(--t3);margin-top:3px">JPG o PNG, máx 2MB</div></div>
+              </div>
+              <div class="g2"><div class="fg"><label>Nombre</label><input class="fi" id="setFn"></div><div class="fg"><label>Apellido</label><input class="fi" id="setLn"></div></div>
+              <div class="fg"><label>Correo electrónico</label><input class="fi" id="setEm"></div>
+              <div class="fg"><label>Empresa</label><input class="fi" id="setCo"></div>
+              <div class="fg"><label>Cargo</label><input class="fi" id="setJob" placeholder="Tu cargo"></div>
+              <button class="btn btn-p" onclick="saveProfile()"><i class="ti ti-check"></i>Guardar cambios</button>
+            </div>
+          </div>
+          <div id="sEmp" style="display:none">
+            <div class="ss"><div class="ss-t">Datos de la empresa</div>
+              <div class="fg"><label>Nombre empresa</label><input class="fi" id="empName" placeholder="Mi Empresa S.A.S."></div>
+              <div class="fg"><label>NIT / RUT</label><input class="fi" id="empNit" placeholder="900.000.000-0"></div>
+              <div class="fg"><label>Dirección</label><input class="fi" id="empDir" placeholder="Calle 1 #2-3, Ciudad"></div>
+              <div class="fg"><label>Sitio web</label><input class="fi" id="empWeb" placeholder="https://miempresa.com"></div>
+              <button class="btn btn-p" onclick="saveEmp()"><i class="ti ti-check"></i>Guardar empresa</button>
+            </div>
+          </div>
+          <div id="sNotif" style="display:none">
+            <div class="ss"><div class="ss-t">Preferencias de alertas</div>
+              <div class="sr"><div><div class="sl">Nuevos deals</div><div class="sd">Al crear un negocio</div></div><button class="tgl on" onclick="this.classList.toggle('on')"></button></div>
+              <div class="sr"><div><div class="sl">Facturas vencidas</div><div class="sd">Alertas de cobro</div></div><button class="tgl on" onclick="this.classList.toggle('on')"></button></div>
+              <div class="sr"><div><div class="sl">Tareas asignadas</div><div class="sd">Al recibir una tarea</div></div><button class="tgl on" onclick="this.classList.toggle('on')"></button></div>
+              <div class="sr"><div><div class="sl">Recordatorios de eventos</div><div class="sd">15 min antes</div></div><button class="tgl" onclick="this.classList.toggle('on')"></button></div>
+            </div>
+          </div>
+          <div id="sSeg" style="display:none">
+            <div class="ss"><div class="ss-t">Cambiar contraseña</div>
+              <div class="fg"><label>Contraseña actual</label><input class="fi" id="pw0" type="password" placeholder="••••••••"></div>
+              <div class="fg"><label>Nueva contraseña</label><input class="fi" id="pw1" type="password" placeholder="Mínimo 6 caracteres"></div>
+              <div class="fg"><label>Confirmar</label><input class="fi" id="pw2" type="password" placeholder="Repetir contraseña"></div>
+              <button class="btn btn-p" onclick="changePw()"><i class="ti ti-lock"></i>Actualizar contraseña</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- ct -->
+</main>
+</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════ MODALS ════════════════ -->
+
+<!-- DEAL -->
+<div class="mo" id="mDeal" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mDealTitle">Nuevo deal</div><button class="mclose" onclick="cById('mDeal')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mDealId">
+  <div class="fg"><label>Nombre del negocio *</label><input class="fi" id="mdName" placeholder="Ej: Contrato anual Tech Corp"></div>
+  <div class="g2">
+    <div class="fg"><label>Cliente / Empresa *</label><input class="fi" id="mdClient" placeholder="Nombre del cliente"></div>
+    <div class="fg"><label>Valor estimado ($)</label><input class="fi" id="mdVal" type="number" placeholder="0" min="0"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Etapa</label><select class="fi" id="mdStage"><option>Prospecto</option><option>Calificado</option><option>Propuesta</option><option>Negociación</option><option>Cerrado Ganado</option><option>Cerrado Perdido</option></select></div>
+    <div class="fg"><label>Fecha estimada de cierre</label><input class="fi" id="mdDate" type="date"></div>
+  </div>
+  <div class="fg"><label>Responsable</label><input class="fi" id="mdOwner" placeholder="Nombre del responsable"></div>
+  <div class="fg"><label>Notas</label><textarea class="fi" id="mdNotes" placeholder="Detalles adicionales..."></textarea></div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveDeal()"><i class="ti ti-check"></i>Guardar deal</button>
+    <button class="btn btn-o" onclick="cById('mDeal')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- EVENT -->
+<div class="mo" id="mEvent" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mEventTitle">Nuevo evento</div><button class="mclose" onclick="cById('mEvent')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mEventId">
+  <div class="fg"><label>Título del evento *</label><input class="fi" id="meTit" placeholder="Ej: Reunión con cliente"></div>
+  <div class="g2">
+    <div class="fg"><label>Fecha *</label><input class="fi" id="meDate" type="date"></div>
+    <div class="fg"><label>Hora</label><input class="fi" id="meTime" type="time" value="09:00"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Tipo</label><select class="fi" id="meType"><option>Reunión</option><option>Llamada</option><option>Demo</option><option>Capacitación</option><option>Revisión</option><option>Otro</option></select></div>
+    <div class="fg"><label>Color</label><select class="fi" id="meColor"><option value="c1">Azul (Reunión)</option><option value="c2">Verde (Revisión)</option><option value="c3">Amarillo (Llamada)</option><option value="c4">Rosa (Demo)</option></select></div>
+  </div>
+  <div class="fg"><label>Descripción</label><textarea class="fi" id="meDesc" placeholder="Detalles del evento..."></textarea></div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveEvent()"><i class="ti ti-check"></i>Guardar evento</button>
+    <button class="btn btn-o" onclick="cById('mEvent')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- CONTACT -->
+<div class="mo" id="mContact" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mContactTitle">Nuevo contacto</div><button class="mclose" onclick="cById('mContact')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mContactId">
+  <div class="g2">
+    <div class="fg"><label>Nombre *</label><input class="fi" id="mcFn" placeholder="Ana"></div>
+    <div class="fg"><label>Apellido *</label><input class="fi" id="mcLn" placeholder="García"></div>
+  </div>
+  <div class="fg"><label>Empresa</label><input class="fi" id="mcCo" placeholder="Mi Empresa S.A."></div>
+  <div class="fg"><label>Cargo</label><input class="fi" id="mcJob" placeholder="CEO / Gerente / Director..."></div>
+  <div class="g2">
+    <div class="fg"><label>Email</label><input class="fi" id="mcEm" type="email" placeholder="ana@empresa.com"></div>
+    <div class="fg"><label>Teléfono</label><input class="fi" id="mcTel" placeholder="+57 300 000 0000"></div>
+  </div>
+  <div class="fg"><label>Tipo</label><select class="fi" id="mcType"><option value="client">Cliente</option><option value="prospect">Prospecto</option><option value="supplier">Proveedor</option></select></div>
+  <div class="fg"><label>Notas</label><textarea class="fi" id="mcNotes" placeholder="Información adicional..."></textarea></div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveContact()"><i class="ti ti-check"></i>Guardar contacto</button>
+    <button class="btn btn-o" onclick="cById('mContact')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- INVOICE -->
+<div class="mo" id="mInvoice" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mInvTitle">Nueva factura</div><button class="mclose" onclick="cById('mInvoice')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mInvId">
+  <div class="g2">
+    <div class="fg"><label>Cliente *</label><input class="fi" id="miClient" placeholder="Nombre del cliente"></div>
+    <div class="fg"><label>Número / Referencia</label><input class="fi" id="miRef" placeholder="FAC-001"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Monto ($) *</label><input class="fi" id="miAmt" type="number" placeholder="0" min="0"></div>
+    <div class="fg"><label>Estado</label><select class="fi" id="miSt"><option>Pendiente</option><option>Pagado</option><option>En revisión</option><option>Vencido</option></select></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Fecha de emisión</label><input class="fi" id="miIss" type="date"></div>
+    <div class="fg"><label>Fecha de vencimiento</label><input class="fi" id="miDue" type="date"></div>
+  </div>
+  <div class="fg"><label>Descripción del servicio</label><textarea class="fi" id="miDesc" placeholder="Detalle de la factura..."></textarea></div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveInvoice()"><i class="ti ti-check"></i>Guardar factura</button>
+    <button class="btn btn-o" onclick="cById('mInvoice')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- PRODUCT -->
+<div class="mo" id="mProduct" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mProdTitle">Nuevo producto</div><button class="mclose" onclick="cById('mProduct')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mProdId">
+  <div class="fg"><label>Nombre del producto *</label><input class="fi" id="mpName" placeholder="Plan Pro / Consultoría / Hardware..."></div>
+  <div class="g2">
+    <div class="fg"><label>Categoría</label><select class="fi" id="mpCat"><option>Software</option><option>Servicio</option><option>Hardware</option><option>Suscripción</option><option>Otro</option></select></div>
+    <div class="fg"><label>Precio *</label><input class="fi" id="mpPrice" placeholder="$500 / mes"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Stock / Disponibilidad</label><input class="fi" id="mpStock" placeholder="Ilimitado / 10 unidades..."></div>
+    <div class="fg"><label>Estado</label><select class="fi" id="mpSt"><option>Activo</option><option>Inactivo</option><option>Agotado</option></select></div>
+  </div>
+  <div class="fg"><label>Descripción</label><textarea class="fi" id="mpDesc" placeholder="Descripción del producto o servicio..."></textarea></div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveProduct()"><i class="ti ti-check"></i>Guardar producto</button>
+    <button class="btn btn-o" onclick="cById('mProduct')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- TASK -->
+<div class="mo" id="mTask" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mTaskTitle">Nueva tarea</div><button class="mclose" onclick="cById('mTask')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mTaskId">
+  <div class="fg"><label>Título de la tarea *</label><input class="fi" id="mtName" placeholder="Describir la tarea..."></div>
+  <div class="g2">
+    <div class="fg"><label>Asignado a</label><input class="fi" id="mtOwner" placeholder="Nombre del responsable"></div>
+    <div class="fg"><label>Prioridad</label><select class="fi" id="mtPri"><option>Urgente</option><option>Normal</option><option>Baja</option></select></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Fecha límite</label><input class="fi" id="mtDue" type="date"></div>
+    <div class="fg"><label>Estado</label><select class="fi" id="mtSt"><option value="pending">Pendiente</option><option value="progress">En progreso</option><option value="done">Completada</option></select></div>
+  </div>
+  <div class="fg"><label>Descripción</label><textarea class="fi" id="mtDesc" placeholder="Detalles de la tarea..."></textarea></div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveTask()"><i class="ti ti-check"></i>Guardar tarea</button>
+    <button class="btn btn-o" onclick="cById('mTask')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- ADD USER (admin) -->
+<div class="mo" id="mAddUser" onclick="cM(event)">
+<div class="mb">
+  <div class="mh"><div class="modal-title" id="mAuTitle">Agregar usuario</div><button class="mclose" onclick="cById('mAddUser')"><i class="ti ti-x"></i></button></div>
+  <input type="hidden" id="mAuId">
+  <div class="g2">
+    <div class="fg"><label>Nombre *</label><input class="fi" id="auFn" placeholder="Ana"></div>
+    <div class="fg"><label>Apellido</label><input class="fi" id="auLn" placeholder="García"></div>
+  </div>
+  <div class="fg"><label>Email *</label><input class="fi" id="auEm" type="email" placeholder="ana@empresa.com"></div>
+  <div class="fg"><label>Contraseña *</label><input class="fi" id="auPw" type="password" placeholder="Mínimo 6 caracteres"></div>
+  <div class="g2">
+    <div class="fg"><label>Rol</label><select class="fi" id="auRol"><option value="user">Usuario general</option><option value="admin">Administrador</option></select></div>
+    <div class="fg"><label>Empresa</label><input class="fi" id="auCo" placeholder="Annonym"></div>
+  </div>
+  <div class="mfooter">
+    <button class="btn btn-p" style="flex:1" onclick="saveUser()"><i class="ti ti-check"></i>Guardar usuario</button>
+    <button class="btn btn-o" onclick="cById('mAddUser')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="mo" id="mConfirm" onclick="cM(event)">
+<div class="mb" style="width:360px">
+  <div class="mh"><div class="modal-title" style="color:var(--err)"><i class="ti ti-alert-triangle"></i> Confirmar eliminación</div><button class="mclose" onclick="cById('mConfirm')"><i class="ti ti-x"></i></button></div>
+  <p id="mConfirmTxt" style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:4px"></p>
+  <div class="mfooter">
+    <button class="btn btn-d" style="flex:1" id="mConfirmBtn">Eliminar definitivamente</button>
+    <button class="btn btn-o" onclick="cById('mConfirm')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════
+//  STORAGE HELPERS
+// ══════════════════════════════════════════════
+const LS  = k => { try{return JSON.parse(localStorage.getItem('ann2_'+k))}catch{return null} };
+const SS  = (k,v) => localStorage.setItem('ann2_'+k, JSON.stringify(v));
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const now = () => new Date().toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+const fmtDate = s => { if(!s)return '—'; const d=new Date(s+'T00:00:00'); return d.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}); };
+const fmtMoney= n => n>=1000?'$'+Math.round(n/1000)+'K':'$'+(n||0);
+
+// Seed initial admin if no users exist
+function initDB(){
+  if(!LS('users')){
+    SS('users',[]);
+    SS('deals',[]);
+    SS('contacts',[]);
+    SS('invoices',[]);
+    SS('products',[]);
+    SS('tasks',[]);
+    SS('events',{});
+    SS('audit',[]);
+  }
+
+  // Catalogs (admin editable)
+  if(!LS('catalogs')){
+    SS('catalogs',{
+      cargos:[
+        'CEO / Gerente / Director',
+        'Coordinador',
+        'Analista',
+        'Consultor',
+        'Asesor Comercial'
+      ],
+      estadosTareas:[
+        {id:'pending',label:'Pendiente'},
+        {id:'progress',label:'En progreso'},
+        {id:'done',label:'Completada'}
+      ],
+      estadosInvoices:['Pendiente','Pagado','En revisión','Vencido'],
+      etapasDeals:['Prospecto','Calificado','Propuesta','Negociación','Cerrado Ganado','Cerrado Perdido']
+    });
+  }
+
+  // Access control: userId -> [contactId]
+  if(!LS('contactAccess')){
+    SS('contactAccess',{});
+  }
+}
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let CU = null;  // current user
+let contFilt = {q:'',type:'all'};
+let invFilt  = {q:'',status:'all'};
+let prodFilt = {q:''};
+let notifs   = [];
+let calState = {y:new Date().getFullYear(), m:new Date().getMonth()};
+const MN=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const AVATARCOLORS=['linear-gradient(135deg,#5b6af0,#f06b8a)','linear-gradient(135deg,#30d4a0,#4db3ff)','linear-gradient(135deg,#f5b942,#f97316)','linear-gradient(135deg,#ef4444,#ec4899)','linear-gradient(135deg,#06b6d4,#6366f1)','linear-gradient(135deg,#10b981,#34d399)'];
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+function swTab(tab,el){
+  document.querySelectorAll('.atb').forEach(t=>t.classList.remove('on')); el.classList.add('on');
+  $('fLogin').style.display = tab==='login'?'block':'none';
+  $('fReg').style.display   = tab==='reg'?'block':'none';
+  // Show hint if users exist
+  const users=LS('users')||[];
+  if(tab==='login'&&users.length>0){
+    const admins=users.filter(u=>u.role==='admin');
+    $('lhint').innerHTML=admins.length?`<b>Admin:</b> ${admins[0].email}`:'';
+  } else $('lhint').innerHTML='';
+}
+
+function doLogin(){
+  const em=$('lem').value.trim().toLowerCase();
+  const pw=$('lpw').value;
+  const err=$('lerr');
+  if(!em||!pw){err.textContent='Ingresa tu correo y contraseña.';err.style.display='block';return;}
+  const users=LS('users')||[];
+  const u=users.find(u=>u.email===em&&u.pass===pw&&u.active!==false);
+  if(!u){err.textContent='Credenciales incorrectas o cuenta inactiva.';err.style.display='block';return;}
+  err.style.display='none';
+  CU=u; startApp(u);
+}
+
+function doReg(){
+  const fn=$('rfn').value.trim(), ln=$('rln').value.trim();
+  const em=$('rem').value.trim().toLowerCase();
+  const co=$('rco').value.trim(), rol=$('rrol').value;
+  const p1=$('rp1').value, p2=$('rp2').value;
+  const err=$('rerr'), ok=$('rok');
+  err.style.display='none'; ok.style.display='none';
+  if(!fn||!em||!p1){err.textContent='Completa los campos obligatorios (*)';err.style.display='block';return;}
+  if(p1.length<6){err.textContent='La contraseña debe tener al menos 6 caracteres.';err.style.display='block';return;}
+  if(p1!==p2){err.textContent='Las contraseñas no coinciden.';err.style.display='block';return;}
+  const users=LS('users')||[];
+  if(users.find(u=>u.email===em)){err.textContent='Este correo ya está registrado.';err.style.display='block';return;}
+  const nu={id:uid(),email:em,pass:p1,first:fn,last:ln,company:co,role:rol,active:true,created:now()};
+  users.push(nu); SS('users',users);
+  log(nu,'Cuenta creada','Auth');
+  ok.textContent='¡Cuenta creada exitosamente! Inicia sesión.';ok.style.display='block';
+  setTimeout(()=>{ swTab('login',document.querySelectorAll('.atb')[0]); $('lem').value=em; ok.style.display='none'; },2000);
+}
+
+function startApp(u){
+  $('auth').style.display='none';
+  $('app').style.display='block';
+  const init=(u.first[0]+(u.last||'')[0]||'?').toUpperCase();
+  ['sbava','hdrAva','setAva'].forEach(id=>{const el=$(id);if(el)el.textContent=init});
+  $('sbuname').textContent=u.first+' '+(u.last||'');
+  $('sbrole').textContent=u.role==='admin'?'Administrador':'Usuario general';
+  $('ugreet').textContent=u.first;
+  $('dashSub').textContent=u.role==='admin'?'Panel de administrador':'Panel de usuario';
+  $('adminNav').style.display=u.role==='admin'?'block':'none';
+  if(u.role!=='admin'){
+    $('btnNewProd').style.display='none';
+    $('btnInvite').style.display='none';
+    $('dashCta').style.display='none';
+  } else {
+    $('btnNewProd').style.display='';
+    $('btnInvite').style.display='';
+    $('dashCta').style.display='';
+  }
+  // pre-fill settings
+  $('setFn').value=u.first; $('setLn').value=u.last||'';
+  $('setEm').value=u.email; $('setCo').value=u.company||'';
+  const emp=LS('empData')||{};
+  if($('empName'))$('empName').value=emp.name||'';
+  if($('empNit'))$('empNit').value=emp.nit||'';
+  if($('empDir'))$('empDir').value=emp.dir||'';
+  if($('empWeb'))$('empWeb').value=emp.web||'';
+  log(u,'Inicio de sesión','Auth');
+  renderAll();
+}
+
+function doLogout(){
+  if(CU) log(CU,'Cierre de sesión','Auth');
+  CU=null; notifs=[];
+  $('app').style.display='none';
+  $('auth').style.display='flex';
+  $('lem').value=''; $('lpw').value='';
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+const PTITLES={dashboard:'Dashboard',analytics:'Analytics',calendar:'Calendario',pipeline:'Pipeline de Ventas',contacts:'Contactos',invoices:'Facturas',products:'Productos',tasks:'Tareas',reports:'Reportes',team:'Equipo',adminUsers:'Usuarios & Roles',adminAudit:'Auditoría',settings:'Configuración'};
+
+function goPg(name,el){
+  if(name.startsWith('admin')&&CU?.role!=='admin'){toast('Acceso restringido a administradores.','err');return;}
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  const pg=$('pg-'+name); if(pg)pg.classList.add('on');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  if(el)el.classList.add('on');
+  $('htitle').textContent=PTITLES[name]||name;
+  $('np').classList.remove('on');
+  $('globalSearch').value='';
+  if(name==='calendar')renderCal();
+  if(name==='analytics')renderAnalytics();
+  if(name==='adminUsers')renderUserList();
+  if(name==='adminAudit')renderAudit();
+  if(name==='reports')renderReport();
+  if(name==='dashboard')renderDash();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER ALL
+// ══════════════════════════════════════════════
+function renderAll(){
+  renderDash(); renderPipeline(); renderContacts();
+  renderInvoices(); renderProducts(); renderTasks(); renderTeam();
+}
+
+// ── DASHBOARD ──
+function renderDash(){
+  const deals=LS('deals')||[], contacts=LS('contacts')||[], invoices=LS('invoices')||[], tasks=LS('tasks')||[];
+  const rev=invoices.filter(i=>i.status==='Pagado').reduce((s,i)=>s+Number(i.amount||0),0);
+  const actDeals=deals.filter(d=>!d.stage?.includes('Cerrado')).length;
+  $('dRev').textContent=fmtMoney(rev);
+  $('dCli').textContent=contacts.length;
+  $('dDeals').textContent=actDeals;
+  $('dInv').textContent=invoices.length;
+  $('nbPipe').textContent=actDeals;
+  const pendTasks=tasks.filter(t=>t.status==='pending');
+  $('nbTask').textContent=pendTasks.length;
+
+  // Dash deals
+  const dd=$('dashDeals');
+  if(deals.length===0){dd.innerHTML='<div class="empty" style="padding:24px"><i class="ti ti-topology-star"></i><p>No hay deals registrados aún.<br>Crea tu primer negocio.</p><button class="btn btn-p" onclick="openM(\'mDeal\')"><i class="ti ti-plus"></i>Crear deal</button></div>';}
+  else{
+    dd.innerHTML='';
+    deals.slice(-5).reverse().forEach(d=>{
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(37,45,64,.4)';
+      div.innerHTML=`<div><div style="font-size:12px;font-weight:600;color:var(--t1)">${d.name}</div><div style="font-size:10px;color:var(--t2)">${d.client||'—'} · ${d.stage}</div></div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--ac3)">${fmtMoney(d.val)}</div>`;
+      dd.appendChild(div);
+    });
+  }
+
+  // Dash invoices
+  const di=$('dashInv');
+  if(invoices.length===0){di.innerHTML='<div class="empty" style="padding:16px"><i class="ti ti-receipt"></i><p>Sin facturas.</p></div>';}
+  else{
+    di.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th>Monto</th><th>Estado</th></tr></thead><tbody>'+
+    invoices.slice(-4).reverse().map(i=>`<tr><td class="tdm">${i.client}</td><td style="color:var(--ac3);font-weight:600">${fmtMoney(i.amount)}</td><td>${stBadge(i.status)}</td></tr>`).join('')+
+    '</tbody></table></div>';
+  }
+
+  // Dash tasks
+  const dt=$('dashTasks');
+  if(pendTasks.length===0){dt.innerHTML='<div class="empty" style="padding:16px"><i class="ti ti-checklist"></i><p>Sin tareas pendientes.</p></div>';}
+  else{
+    dt.innerHTML='';
+    pendTasks.slice(0,4).forEach(t=>{
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(37,45,64,.4)';
+      div.innerHTML=`<div><div style="font-size:12px;font-weight:600;color:var(--t1)">${t.name}</div><div style="font-size:10px;color:var(--t2)">${t.owner||'Sin asignar'}</div></div><span class="bs ${priCls(t.pri)}">${t.pri||'Normal'}</span>`;
+      dt.appendChild(div);
+    });
+  }
+
+  // Dash activity (from audit)
+  const audit=(LS('audit')||[]).slice(-6).reverse();
+  const da=$('dashAct');
+  if(audit.length===0){da.innerHTML='<div class="empty" style="padding:24px"><i class="ti ti-activity"></i><p>Sin actividad.</p></div>';}
+  else{
+    da.innerHTML='';
+    audit.forEach(a=>{
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(37,45,64,.4);font-size:11px';
+      div.innerHTML=`<div style="width:28px;height:28px;border-radius:7px;background:rgba(91,106,240,.12);display:flex;align-items:center;justify-content:center;color:var(--ac);flex-shrink:0"><i class="ti ti-activity"></i></div><div style="flex:1"><div style="color:var(--t1)">${a.action}</div><div style="color:var(--t3);font-size:10px">${a.ts} · ${a.user}</div></div>`;
+      da.appendChild(div);
+    });
+  }
+}
+
+// ── ANALYTICS ──
+function renderAnalytics(){
+  const deals=LS('deals')||[], contacts=LS('contacts')||[], invoices=LS('invoices')||[], tasks=LS('tasks')||[];
+  const paid=invoices.filter(i=>i.status==='Pagado').reduce((s,i)=>s+Number(i.amount||0),0);
+  const pend=invoices.filter(i=>i.status==='Pendiente').reduce((s,i)=>s+Number(i.amount||0),0);
+  const exp=invoices.filter(i=>i.status==='Vencido').reduce((s,i)=>s+Number(i.amount||0),0);
+  const done=tasks.filter(t=>t.status==='done').length;
+  $('aPaid').textContent=fmtMoney(paid);$('aPend').textContent=fmtMoney(pend);
+  $('aExp').textContent=fmtMoney(exp);$('aDone').textContent=done;
+
+  // By stage
+  const stages=['Prospecto','Calificado','Propuesta','Negociación','Cerrado Ganado','Cerrado Perdido'];
+  const bst=$('aByStage'); bst.innerHTML='';
+  stages.forEach(st=>{
+    const cnt=deals.filter(d=>d.stage===st).length;
+    if(!cnt&&deals.length>0)return;
+    const div=document.createElement('div');
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--t1)">${st}</span><span style="color:var(--ac3);font-weight:600">${cnt}</span></div><div class="pb"><div class="pf" style="width:${deals.length?Math.round(cnt/deals.length*100):0}%;background:var(--ac)"></div></div>`;
+    bst.appendChild(div);
+  });
+  if(!deals.length)bst.innerHTML='<div class="empty" style="padding:16px"><i class="ti ti-topology-star"></i><p>Sin datos aún</p></div>';
+
+  // By type
+  const types=['client','prospect','supplier'];
+  const tLabels={client:'Clientes',prospect:'Prospectos',supplier:'Proveedores'};
+  const btp=$('aByType'); btp.innerHTML='';
+  types.forEach(tp=>{
+    const cnt=contacts.filter(c=>c.type===tp).length;
+    if(!cnt&&contacts.length>0)return;
+    const div=document.createElement('div');
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--t1)">${tLabels[tp]}</span><span style="color:var(--ac3);font-weight:600">${cnt}</span></div><div class="pb"><div class="pf" style="width:${contacts.length?Math.round(cnt/contacts.length*100):0}%;background:var(--ac3)"></div></div>`;
+    btp.appendChild(div);
+  });
+  if(!contacts.length)btp.innerHTML='<div class="empty" style="padding:16px"><i class="ti ti-users"></i><p>Sin datos aún</p></div>';
+
+  // Chart by stage value
+  const ac=$('aChart'), al=$('aChartLbls');
+  ac.innerHTML=''; al.innerHTML='';
+  const maxVal=Math.max(...stages.map(st=>deals.filter(d=>d.stage===st).reduce((s,d)=>s+Number(d.val||0),0)),1);
+  stages.forEach((st,i)=>{
+    const total=deals.filter(d=>d.stage===st).reduce((s,d)=>s+Number(d.val||0),0);
+    const bar=document.createElement('div'); bar.className='cbar';
+    bar.style.height=(total/maxVal*100)+'%';
+    bar.style.background=['var(--ac)','var(--ac5)','var(--ac4)','var(--ac3)','rgba(32,196,90,.6)','rgba(239,68,68,.5)'][i]||'var(--ac)';
+    bar.title=st+': '+fmtMoney(total);
+    ac.appendChild(bar);
+    const lbl=document.createElement('span'); lbl.style.cssText='font-size:9px;color:var(--t3);text-align:center';
+    lbl.textContent=st.replace(' ','\n'); al.appendChild(lbl);
+  });
+}
+
+// ── CALENDAR ──
+function renderCal(){
+  const grid=$('calGrid'); if(!grid)return;
+  grid.querySelectorAll('.cd').forEach(d=>d.remove());
+  const lbl=$('calLbl'); if(lbl)lbl.textContent=MN[calState.m]+' '+calState.y;
+  const events=LS('events')||{};
+  const today=new Date();
+  const firstDay=new Date(calState.y,calState.m,1).getDay();
+  const dIM=new Date(calState.y,calState.m+1,0).getDate();
+  const dIP=new Date(calState.y,calState.m,0).getDate();
+  for(let i=firstDay-1;i>=0;i--) grid.appendChild(mkDay(dIP-i,true,[]));
+  for(let i=1;i<=dIM;i++){
+    const isT=today.getFullYear()===calState.y&&today.getMonth()===calState.m&&today.getDate()===i;
+    const key=`${calState.y}-${calState.m+1}-${i}`;
+    const d=mkDay(i,false,events[key]||[],isT,key);
+    grid.appendChild(d);
+  }
+  const total=firstDay+dIM, rem=total%7===0?0:7-(total%7);
+  for(let i=1;i<=rem;i++) grid.appendChild(mkDay(i,true,[]));
+  // Event list sidebar
+  const el=$('evtList'); if(!el)return;
+  const allEvts=[];
+  Object.entries(events).forEach(([key,evts])=>{
+    const parts=key.split('-');
+    if(parseInt(parts[0])===calState.y&&parseInt(parts[1])-1===calState.m){
+      evts.forEach(e=>allEvts.push({...e,key,day:parseInt(parts[2])}));
+    }
+  });
+  allEvts.sort((a,b)=>a.day-b.day);
+  if(!allEvts.length){el.innerHTML='<div class="empty" style="padding:16px"><i class="ti ti-calendar-off" style="font-size:28px;margin-bottom:6px"></i><p>Sin eventos este mes.</p></div>';return;}
+  el.innerHTML='';
+  allEvts.forEach(e=>{
+    const div=document.createElement('div');
+    div.style.cssText='display:flex;align-items:flex-start;gap:7px;padding:8px 0;border-bottom:1px solid rgba(37,45,64,.4)';
+    const colMap={c1:'var(--ac)',c2:'var(--ac3)',c3:'var(--ac4)',c4:'var(--ac2)'};
+    div.innerHTML=`<div style="width:6px;height:6px;border-radius:50%;background:${colMap[e.color]||'var(--ac)'};flex-shrink:0;margin-top:3px"></div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--t1)">${e.title}</div><div style="font-size:10px;color:var(--t2)">${MN[calState.m].slice(0,3)} ${e.day}${e.time?' · '+e.time:''}</div></div>
+      <button class="btn btn-d" style="padding:2px 6px;font-size:9px" onclick="delEvent('${e.key}','${e.id}')">✕</button>`;
+    el.appendChild(div);
+  });
+}
+function mkDay(num,other,events,isToday=false,key=''){
+  const d=document.createElement('div');
+  d.className='cd'+(other?' om':'')+(isToday?' td':'');
+  if(!other&&key) d.onclick=()=>{ $('meDate').value=key.split('-').map((p,i)=>i>0?p.padStart(2,'0'):p).join('-'); openM('mEvent'); };
+  const dn=document.createElement('div'); dn.className='cdn'; dn.textContent=num; d.appendChild(dn);
+  events.slice(0,2).forEach(e=>{
+    const ev=document.createElement('div'); ev.className='cev '+e.color;
+    ev.textContent=e.title;
+    ev.onclick=(ev2)=>{ev2.stopPropagation();};
+    d.appendChild(ev);
+  });
+  return d;
+}
+function chMo(dir){calState.m+=dir;if(calState.m>11){calState.m=0;calState.y++;}if(calState.m<0){calState.m=11;calState.y--;}renderCal();}
+function delEvent(key,id){
+  const events=LS('events')||{};
+  if(events[key]){events[key]=events[key].filter(e=>e.id!==id);if(!events[key].length)delete events[key];}
+  SS('events',events); renderCal(); toast('Evento eliminado','ok');
+}
+
+// ── PIPELINE ──
+function renderPipeline(){
+  const deals=LS('deals')||[];
+  const cols=$('pipeCols'); if(!cols)return;
+  cols.innerHTML='';
+  const stages=['Prospecto','Calificado','Propuesta','Negociación','Cerrado Ganado','Cerrado Perdido'];
+  const sub=$('pipeSub');
+  const active=deals.filter(d=>!d.stage?.includes('Cerrado'));
+  if(sub)sub.textContent=active.length?`${active.length} deals activos · ${fmtMoney(active.reduce((s,d)=>s+Number(d.val||0),0))} en juego`:'Sin deals registrados';
+  stages.forEach(stage=>{
+    const col=document.createElement('div'); col.className='pcol';
+    const stDeals=deals.filter(d=>d.stage===stage);
+    col.innerHTML=`<div class="pcolh"><span>${stage}</span><span class="pcnt">${stDeals.length}</span></div>`;
+    if(!stDeals.length){
+      const emp=document.createElement('div');emp.style.cssText='font-size:10px;color:var(--t4);text-align:center;padding:12px';emp.textContent='Vacío';col.appendChild(emp);
+    }
+    stDeals.forEach(d=>{
+      const div=document.createElement('div'); div.className='dc';
+      div.innerHTML=`<div class="dcn">${d.name}</div><div class="dcc">${d.client||'—'}${d.date?' · '+fmtDate(d.date):''}</div><div class="dcv">${fmtMoney(d.val)}</div>${d.owner?`<div style="font-size:10px;color:var(--t3);margin-top:3px">${d.owner}</div>`:''}
+        <div class="dcacts"><button class="btn btn-e" style="flex:1;padding:3px 6px;font-size:9px" onclick="editDeal('${d.id}')"><i class="ti ti-edit"></i>Editar</button><button class="btn btn-d" style="padding:3px 6px;font-size:9px" onclick="confirmDel('deal','${d.id}','el deal &ldquo;'+escHtml(d.name)+'&rdquo;')"><i class="ti ti-trash"></i></button></div>`;
+      col.appendChild(div);
+    });
+    cols.appendChild(col);
+  });
+  renderDash();
+}
+
+// ── CONTACTS ──
+function renderContacts(filt){
+  const f=filt||contFilt;
+  const contacts=LS('contacts')||[];
+  const q=f.q.toLowerCase();
+  const filtered=contacts.filter(c=>{
+    const match=(c.fn+' '+c.ln+' '+(c.company||'')).toLowerCase().includes(q);
+    const typeOk=f.type==='all'||c.type===f.type;
+    return match&&typeOk;
+  });
+  const el=$('contGrid'); if(!el)return;
+  const sub=$('contSub'); if(sub)sub.textContent=`${contacts.length} contactos totales`;
+  el.innerHTML='';
+  if(!filtered.length){el.innerHTML='<div class="empty" style="grid-column:1/-1;padding:32px"><i class="ti ti-users"></i><p>'+(!contacts.length?'Sin contactos registrados.<br>Agrega tu primer contacto.':'Sin resultados para tu búsqueda.')+'</p>'+(CU?.role==='admin'&&!contacts.length?'<button class="btn btn-p" onclick="openM(\'mContact\')"><i class="ti ti-user-plus"></i>Agregar contacto</button>':'')+'</div>';return;}
+  filtered.forEach((c,i)=>{
+    const div=document.createElement('div'); div.className='ccard';
+    const tLabel={client:'Cliente',prospect:'Prospecto',supplier:'Proveedor'};
+    const tCls={client:'bs-ok',prospect:'bs-w',supplier:'bs-i'};
+    div.innerHTML=`<div class="cava" style="background:${AVATARCOLORS[i%AVATARCOLORS.length]}">${(c.fn[0]||'?')+(c.ln[0]||'')}</div>
+      <div class="ccn">${c.fn} ${c.ln}</div>
+      <div class="ccr">${c.job||c.role||''} ${c.company?'· '+c.company:''}</div>
+      <span class="bs ${tCls[c.type]||'bs-i'}">${tLabel[c.type]||c.type}</span>
+      ${c.email?`<div style="font-size:10px;color:var(--t2);margin-top:5px">${c.email}</div>`:''}
+      ${c.tel?`<div style="font-size:10px;color:var(--t2)">${c.tel}</div>`:''}
+      <div class="ccacts">
+        <button class="btn btn-e" style="font-size:9px;padding:3px 8px" onclick="editContact('${c.id}')"><i class="ti ti-edit"></i>Editar</button>
+        ${CU?.role==='admin'?`<button class="btn btn-d" style="font-size:9px;padding:3px 8px" onclick="confirmDel('contact','${c.id}','el contacto &ldquo;${escHtml(c.fn+' '+c.ln)}&rdquo;')"><i class="ti ti-trash"></i></button>`:''}
+      </div>`;
+    el.appendChild(div);
+  });
+}
+function srchContacts(q){contFilt.q=q;renderContacts();}
+function filtCont(type,el){
+  contFilt.type=type;
+  document.querySelectorAll('#pg-contacts .fb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on'); renderContacts();
+}
+
+// ── INVOICES ──
+function renderInvoices(filt){
+  const f=filt||invFilt;
+  const invoices=LS('invoices')||[];
+  const q=f.q.toLowerCase();
+  const filtered=invoices.filter(i=>{
+    const match=(i.client||'').toLowerCase().includes(q)||(i.ref||'').toLowerCase().includes(q);
+    const stOk=f.status==='all'||i.status===f.status;
+    return match&&stOk;
+  });
+  const tb=$('invTbody'), empty=$('invEmpty'); if(!tb)return;
+  const paid=invoices.filter(i=>i.status==='Pagado').reduce((s,i)=>s+Number(i.amount||0),0);
+  const pend=invoices.filter(i=>i.status==='Pendiente').reduce((s,i)=>s+Number(i.amount||0),0);
+  const exp=invoices.filter(i=>i.status==='Vencido').reduce((s,i)=>s+Number(i.amount||0),0);
+  $('invPaid').textContent=fmtMoney(paid);$('invPend').textContent=fmtMoney(pend);
+  $('invExp').textContent=fmtMoney(exp);$('invTot').textContent=invoices.length;
+  const sub=$('invSub');if(sub)sub.textContent=`${invoices.length} facturas registradas`;
+  tb.innerHTML='';
+  if(!filtered.length){$('invTable').style.display='none';empty.style.display='block';empty.innerHTML='<div class="empty"><i class="ti ti-receipt"></i><p>'+(invoices.length?'Sin resultados para este filtro.':'Sin facturas registradas.<br>Crea tu primera factura.')+'</p></div>';return;}
+  $('invTable').style.display='';empty.style.display='none';
+  filtered.forEach(inv=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--ac);font-weight:700">${inv.ref||'—'}</td><td class="tdm">${inv.client}</td><td>${fmtDate(inv.issued)}</td><td>${fmtDate(inv.due)}</td><td style="color:var(--ac3);font-weight:600">${fmtMoney(inv.amount)}</td><td>${stBadge(inv.status)}</td>
+      <td><div class="tda"><button class="btn btn-e" style="font-size:9px;padding:3px 7px" onclick="editInv('${inv.id}')"><i class="ti ti-edit"></i>Editar</button><button class="btn btn-d" style="font-size:9px;padding:3px 7px" onclick="confirmDel('invoice','${inv.id}','la factura &ldquo;${escHtml(inv.ref||inv.client)}&rdquo;')"><i class="ti ti-trash"></i></button></div></td>`;
+    tb.appendChild(tr);
+  });
+}
+function srchInv(q){invFilt.q=q;renderInvoices();}
+function filtInv(st,el){invFilt.status=st;document.querySelectorAll('#pg-invoices .tb .fb').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderInvoices();}
+
+// ── PRODUCTS ──
+function renderProducts(q2){
+  const q=(q2||prodFilt.q||'').toLowerCase();
+  const prods=LS('products')||[];
+  const filtered=prods.filter(p=>(p.name||'').toLowerCase().includes(q));
+  const tb=$('prodTbody'), empty=$('prodEmpty'); if(!tb)return;
+  const sub=$('prodSub');if(sub)sub.textContent=`${prods.length} productos`;
+  tb.innerHTML='';
+  if(!filtered.length){empty.style.display='block';$('prodTable').style.display='none';empty.innerHTML='<div class="empty"><i class="ti ti-box"></i><p>'+(prods.length?'Sin resultados.':'Sin productos registrados.<br>Agrega tu primer producto.')+'</p></div>';return;}
+  empty.style.display='none';$('prodTable').style.display='';
+  const stCls={Activo:'bs-ok',Inactivo:'bs-e',Agotado:'bs-w'};
+  filtered.forEach(p=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><div class="tdm">${p.name}</div>${p.desc?`<div style="font-size:10px;color:var(--t3)">${p.desc.slice(0,60)}${p.desc.length>60?'...':''}</div>`:''}</td><td>${p.cat||'—'}</td><td style="color:var(--ac3);font-weight:600">${p.price||'—'}</td><td>${p.stock||'—'}</td><td><span class="bs ${stCls[p.status]||'bs-i'}">${p.status}</span></td>
+      <td><div class="tda"><button class="btn btn-e" style="font-size:9px;padding:3px 7px" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i>Editar</button>${CU?.role==='admin'?`<button class="btn btn-d" style="font-size:9px;padding:3px 7px" onclick="confirmDel('product','${p.id}','el producto &ldquo;${escHtml(p.name)}&rdquo;')"><i class="ti ti-trash"></i></button>`:''}</div></td>`;
+    tb.appendChild(tr);
+  });
+}
+function srchProd(q){prodFilt.q=q;renderProducts(q);}
+
+// ── TASKS ──
+function renderTasks(){
+  const tasks=LS('tasks')||[];
+  const pend=tasks.filter(t=>t.status==='pending');
+  const work=tasks.filter(t=>t.status==='progress');
+  const done=tasks.filter(t=>t.status==='done');
+  $('tkPCnt').textContent=pend.length;$('tkWCnt').textContent=work.length;$('tkDCnt').textContent=done.length;
+  $('nbTask').textContent=pend.length;
+  const tkPend=$('tkPend'),tkWork=$('tkWork'),tkDone=$('tkDone');
+  const empP=$('tkPendEmpty'),empW=$('tkWorkEmpty'),empD=$('tkDoneEmpty');
+  tkPend.innerHTML='';tkWork.innerHTML='';tkDone.innerHTML='';
+  empP.style.display=pend.length?'none':'flex';
+  empW.style.display=work.length?'none':'flex';
+  empD.style.display=done.length?'none':'flex';
+  const mkTk=(t,isDone=false)=>{
+    const div=document.createElement('div'); div.className='tkcard';
+    div.innerHTML=`<div class="tkn" style="${isDone?'text-decoration:line-through;color:var(--t3)':''}">${t.name}</div>
+      <div class="tko">${t.owner||'Sin asignar'}${t.due?' · '+fmtDate(t.due):''}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between"><span class="bs ${priCls(t.pri)}">${t.pri||'Normal'}</span></div>
+      <div class="tkacts">
+        <button class="btn btn-e" style="flex:1;font-size:9px;padding:3px 5px" onclick="editTask('${t.id}')"><i class="ti ti-edit"></i>Editar</button>
+        <button class="btn btn-d" style="font-size:9px;padding:3px 6px" onclick="confirmDel('task','${t.id}','la tarea &ldquo;${escHtml(t.name)}&rdquo;')"><i class="ti ti-trash"></i></button>
+      </div>`;
+    return div;
+  };
+  pend.forEach(t=>tkPend.appendChild(mkTk(t)));
+  work.forEach(t=>tkWork.appendChild(mkTk(t)));
+  done.forEach(t=>tkDone.appendChild(mkTk(t,true)));
+}
+
+// ── TEAM ──
+function renderTeam(){
+  const users=LS('users')||[];
+  const tg=$('teamGrid'),te=$('teamEmpty'); if(!tg)return;
+  const sub=$('teamSub');if(sub)sub.textContent=`${users.filter(u=>u.active!==false).length} miembros`;
+  const active=users.filter(u=>u.active!==false);
+  tg.innerHTML=''; te.style.display=active.length?'none':'block';
+  active.forEach((u,i)=>{
+    const init=(u.first[0]+(u.last||'')[0]||'?').toUpperCase();
+    const div=document.createElement('div'); div.className='tcard';
+    div.innerHTML=`<div class="ava" style="width:38px;height:38px;font-size:13px;background:${AVATARCOLORS[i%AVATARCOLORS.length]}">${init}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700">${u.first} ${u.last||''}</div>
+        <div style="font-size:10px;color:var(--t2);margin-bottom:3px">${u.email}</div>
+        <span class="rbadge ${u.role==='admin'?'adm':'usr'}">${u.role==='admin'?'Admin':'Usuario'}</span>
+      </div>
+      ${CU?.role==='admin'&&u.id!==CU.id?`<div style="display:flex;flex-direction:column;gap:4px"><button class="btn btn-e" style="font-size:9px;padding:2px 7px" onclick="editUser('${u.id}')"><i class="ti ti-edit"></i></button><button class="btn btn-d" style="font-size:9px;padding:2px 7px" onclick="deactUser('${u.id}')"><i class="ti ti-user-off"></i></button></div>`:''}`;
+    tg.appendChild(div);
+  });
+}
+
+// ── ADMIN USERS ──
+function renderUserList(){
+  const users=LS('users')||[];
+  const el=$('auList'); if(!el)return;
+  $('auAdmins').textContent=users.filter(u=>u.role==='admin'&&u.active!==false).length;
+  $('auUsers').textContent=users.filter(u=>u.role==='user'&&u.active!==false).length;
+  $('auInact').textContent=users.filter(u=>u.active===false).length;
+  el.innerHTML='';
+  if(!users.length){el.innerHTML='<div class="empty"><i class="ti ti-users"></i><p>Sin usuarios registrados.</p></div>';return;}
+  users.forEach((u,i)=>{
+    const init=(u.first[0]+(u.last||'')[0]||'?').toUpperCase();
+    const row=document.createElement('div'); row.className='uradmin';
+    row.innerHTML=`<div class="ava" style="width:34px;height:34px;font-size:12px;background:${AVATARCOLORS[i%AVATARCOLORS.length]}">${init}</div>
+      <div class="uinfo"><div class="un">${u.first} ${u.last||''} ${u.active===false?'<span style="color:var(--err);font-size:10px">(Inactivo)</span>':''}</div><div class="ue">${u.email} · ${u.company||'—'}</div><span class="rbadge ${u.role==='admin'?'adm':'usr'}">${u.role==='admin'?'Admin':'Usuario'}</span></div>
+      <div class="uacts">
+        <button class="btn btn-e" style="font-size:9px;padding:3px 8px" onclick="editUser('${u.id}')"><i class="ti ti-edit"></i>Editar</button>
+        <button class="btn btn-o" style="font-size:9px;padding:3px 8px" onclick="toggleRole('${u.id}')">${u.role==='admin'?'→ Usuario':'→ Admin'}</button>
+        ${u.id!==CU?.id?`<button class="btn ${u.active===false?'btn-s':'btn-d'}" style="font-size:9px;padding:3px 8px" onclick="${u.active===false?'reactUser':'deactUser'}('${u.id}')">${u.active===false?'Activar':'Desactivar'}</button>`:''}</div>`;
+    el.appendChild(row);
+  });
+}
+function toggleRole(id){
+  const users=LS('users')||[];
+  const idx=users.findIndex(u=>u.id===id); if(idx<0)return;
+  users[idx].role=users[idx].role==='admin'?'user':'admin';
+  SS('users',users); renderUserList(); renderTeam();
+  log(CU,'Cambió rol de '+users[idx].email,'Admin');
+  toast('Rol actualizado','ok');
+}
+function deactUser(id){
+  const users=LS('users')||[];
+  const idx=users.findIndex(u=>u.id===id); if(idx<0)return;
+  users[idx].active=false; SS('users',users); renderUserList(); renderTeam();
+  log(CU,'Desactivó usuario '+users[idx].email,'Admin'); toast('Usuario desactivado','ok');
+}
+function reactUser(id){
+  const users=LS('users')||[];
+  const idx=users.findIndex(u=>u.id===id); if(idx<0)return;
+  users[idx].active=true; SS('users',users); renderUserList(); renderTeam();
+  log(CU,'Reactivó usuario '+users[idx].email,'Admin'); toast('Usuario reactivado','ok');
+}
+
+// ── AUDIT ──
+function renderAudit(){
+  const audit=LS('audit')||[];
+  const el=$('auditLog'), em=$('auditEmpty'); if(!el)return;
+  em.style.display=audit.length?'none':'block';
+  el.innerHTML='';
+  [...audit].reverse().forEach(a=>{
+    const div=document.createElement('div'); div.className='alogitem';
+    div.innerHTML=`<span class="alogtime">${a.ts}</span><span class="aloguser">${a.user}</span><span class="alogact">${a.action}</span><span class="alogmod">${a.mod}</span>`;
+    el.appendChild(div);
+  });
+}
+function exportAudit(){
+  const audit=LS('audit')||[];
+  const csv='Fecha,Usuario,Rol,Acción,Módulo\n'+audit.map(a=>`"${a.ts}","${a.user}","${a.role}","${a.action}","${a.mod}"`).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='auditoria_annonym.csv';a.click();
+  toast('Auditoría exportada','ok');
+}
+
+// ── REPORT ──
+function renderReport(){
+  const deals=LS('deals')||[], contacts=LS('contacts')||[], invoices=LS('invoices')||[], tasks=LS('tasks')||[];
+  const paid=invoices.filter(i=>i.status==='Pagado').reduce((s,i)=>s+Number(i.amount||0),0);
+  const el=$('repSummary'); if(!el)return;
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+    <div style="background:var(--s2);border-radius:var(--rs);padding:14px"><div style="font-size:11px;color:var(--t3);margin-bottom:4px">PIPELINE</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${deals.length} deals</div><div style="font-size:11px;color:var(--t2)">Activos: ${deals.filter(d=>!d.stage?.includes('Cerrado')).length} · Cerrados: ${deals.filter(d=>d.stage?.includes('Cerrado')).length}</div></div>
+    <div style="background:var(--s2);border-radius:var(--rs);padding:14px"><div style="font-size:11px;color:var(--t3);margin-bottom:4px">FINANZAS</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${fmtMoney(paid)} cobrado</div><div style="font-size:11px;color:var(--t2)">Facturas: ${invoices.length} totales</div></div>
+    <div style="background:var(--s2);border-radius:var(--rs);padding:14px"><div style="font-size:11px;color:var(--t3);margin-bottom:4px">CONTACTOS</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${contacts.length} registros</div><div style="font-size:11px;color:var(--t2)">Clientes: ${contacts.filter(c=>c.type==='client').length} · Prospectos: ${contacts.filter(c=>c.type==='prospect').length}</div></div>
+    <div style="background:var(--s2);border-radius:var(--rs);padding:14px"><div style="font-size:11px;color:var(--t3);margin-bottom:4px">PRODUCTIVIDAD</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${tasks.length} tareas</div><div style="font-size:11px;color:var(--t2)">Pendientes: ${tasks.filter(t=>t.status==='pending').length} · Completas: ${tasks.filter(t=>t.status==='done').length}</div></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  CRUD SAVE FUNCTIONS
+// ══════════════════════════════════════════════
+
+// DEAL
+function openM_Deal(){ $('mDealTitle').textContent='Nuevo deal'; $('mDealId').value=''; ['mdName','mdClient','mdVal','mdDate','mdOwner','mdNotes'].forEach(id=>{const el=$(id);if(el)el.value='';}); $('mdStage').value='Prospecto'; openM('mDeal'); }
+function editDeal(id){
+  const d=(LS('deals')||[]).find(x=>x.id===id); if(!d)return;
+  $('mDealTitle').textContent='Editar deal'; $('mDealId').value=d.id;
+  $('mdName').value=d.name||''; $('mdClient').value=d.client||''; $('mdVal').value=d.val||'';
+  $('mdStage').value=d.stage||'Prospecto'; $('mdDate').value=d.date||'';
+  $('mdOwner').value=d.owner||''; $('mdNotes').value=d.notes||'';
+  openM('mDeal');
+}
+function saveDeal(){
+  const name=$('mdName').value.trim(), client=$('mdClient').value.trim();
+  if(!name||!client){toast('Nombre y cliente son obligatorios.','err');return;}
+  const deals=LS('deals')||[];
+  const id=$('mDealId').value;
+  const obj={id:id||uid(),name,client,val:parseFloat($('mdVal').value)||0,stage:$('mdStage').value,date:$('mdDate').value,owner:$('mdOwner').value.trim(),notes:$('mdNotes').value.trim()};
+  if(id){const idx=deals.findIndex(d=>d.id===id);if(idx>=0)deals[idx]=obj;else deals.push(obj);}
+  else deals.push(obj);
+  SS('deals',deals); cById('mDeal'); renderPipeline();
+  log(CU,(id?'Editó':'Creó')+' deal: '+name,'Pipeline');
+  toast(id?'Deal actualizado':'Deal creado','ok'); addNotif('Deal '+(id?'actualizado':'creado')+': '+name);
+}
+
+// EVENT
+function saveEvent(){
+  const title=$('meTit').value.trim(), date=$('meDate').value;
+  if(!title||!date){toast('Título y fecha son obligatorios.','err');return;}
+  const events=LS('events')||{};
+  const d=new Date(date+'T00:00:00');
+  const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  const id=$('mEventId').value;
+  const obj={id:id||uid(),title,time:$('meTime').value,type:$('meType').value,color:$('meColor').value,desc:$('meDesc').value.trim()};
+  if(id){// edit: remove old, add new
+    Object.keys(events).forEach(k=>{events[k]=events[k].filter(e=>e.id!==id);if(!events[k].length)delete events[k];});
+  }
+  if(!events[key])events[key]=[];
+  events[key].push(obj);
+  SS('events',events); cById('mEvent'); renderCal();
+  log(CU,(id?'Editó':'Creó')+' evento: '+title,'Calendario');
+  toast(id?'Evento actualizado':'Evento creado','ok');
+  $('mEventId').value=''; $('mEventTitle').textContent='Nuevo evento';
+}
+
+// CONTACT
+function editContact(id){
+  const c=(LS('contacts')||[]).find(x=>x.id===id); if(!c)return;
+  $('mContactTitle').textContent='Editar contacto'; $('mContactId').value=c.id;
+  $('mcFn').value=c.fn||''; $('mcLn').value=c.ln||''; $('mcCo').value=c.company||'';
+  $('mcJob').value=c.job||''; $('mcEm').value=c.em||''; $('mcTel').value=c.tel||'';
+  $('mcType').value=c.type||'client'; $('mcNotes').value=c.notes||'';
+  openM('mContact');
+}
+function saveContact(){
+  const fn=$('mcFn').value.trim(), ln=$('mcLn').value.trim();
+  if(!fn){toast('El nombre es obligatorio.','err');return;}
+  const contacts=LS('contacts')||[];
+  const id=$('mContactId').value;
+  const obj={id:id||uid(),fn,ln,company:$('mcCo').value.trim(),job:$('mcJob').value.trim(),em:$('mcEm').value.trim(),tel:$('mcTel').value.trim(),type:$('mcType').value,notes:$('mcNotes').value.trim()};
+  if(id){const idx=contacts.findIndex(c=>c.id===id);if(idx>=0)contacts[idx]=obj;else contacts.push(obj);}
+  else contacts.push(obj);
+  SS('contacts',contacts); cById('mContact'); renderContacts();
+  log(CU,(id?'Editó':'Creó')+' contacto: '+fn+' '+ln,'Contactos');
+  toast(id?'Contacto actualizado':'Contacto creado','ok');
+  $('mContactId').value=''; $('mContactTitle').textContent='Nuevo contacto';
+}
+
+// INVOICE
+function editInv(id){
+  const inv=(LS('invoices')||[]).find(x=>x.id===id); if(!inv)return;
+  $('mInvTitle').textContent='Editar factura'; $('mInvId').value=inv.id;
+  $('miClient').value=inv.client||''; $('miRef').value=inv.ref||''; $('miAmt').value=inv.amount||'';
+  $('miSt').value=inv.status||'Pendiente'; $('miIss').value=inv.issued||'';
+  $('miDue').value=inv.due||''; $('miDesc').value=inv.desc||'';
+  openM('mInvoice');
+}
+function saveInvoice(){
+  const client=$('miClient').value.trim();
+  const amt=parseFloat($('miAmt').value);
+  if(!client||isNaN(amt)||amt<0){toast('Cliente y monto válido son obligatorios.','err');return;}
+  const invoices=LS('invoices')||[];
+  const id=$('mInvId').value;
+  const obj={id:id||uid(),client,ref:$('miRef').value.trim()||'FAC-'+String(invoices.length+1).padStart(3,'0'),amount:amt,status:$('miSt').value,issued:$('miIss').value,due:$('miDue').value,desc:$('miDesc').value.trim()};
+  if(id){const idx=invoices.findIndex(i=>i.id===id);if(idx>=0)invoices[idx]=obj;else invoices.push(obj);}
+  else invoices.push(obj);
+  SS('invoices',invoices); cById('mInvoice'); renderInvoices(); renderDash();
+  log(CU,(id?'Editó':'Creó')+' factura: '+obj.ref,'Facturas');
+  toast(id?'Factura actualizada':'Factura creada','ok');
+  $('mInvId').value=''; $('mInvTitle').textContent='Nueva factura';
+}
+
+// PRODUCT
+function editProd(id){
+  const p=(LS('products')||[]).find(x=>x.id===id); if(!p)return;
+  $('mProdTitle').textContent='Editar producto'; $('mProdId').value=p.id;
+  $('mpName').value=p.name||''; $('mpCat').value=p.cat||'Software';
+  $('mpPrice').value=p.price||''; $('mpStock').value=p.stock||'';
+  $('mpSt').value=p.status||'Activo'; $('mpDesc').value=p.desc||'';
+  openM('mProduct');
+}
+function saveProduct(){
+  const name=$('mpName').value.trim(), price=$('mpPrice').value.trim();
+  if(!name||!price){toast('Nombre y precio son obligatorios.','err');return;}
+  const prods=LS('products')||[];
+  const id=$('mProdId').value;
+  const obj={id:id||uid(),name,cat:$('mpCat').value,price,stock:$('mpStock').value.trim(),status:$('mpSt').value,desc:$('mpDesc').value.trim()};
+  if(id){const idx=prods.findIndex(p=>p.id===id);if(idx>=0)prods[idx]=obj;else prods.push(obj);}
+  else prods.push(obj);
+  SS('products',prods); cById('mProduct'); renderProducts();
+  log(CU,(id?'Editó':'Creó')+' producto: '+name,'Productos');
+  toast(id?'Producto actualizado':'Producto creado','ok');
+  $('mProdId').value=''; $('mProdTitle').textContent='Nuevo producto';
+}
+
+// TASK
+function editTask(id){
+  const t=(LS('tasks')||[]).find(x=>x.id===id); if(!t)return;
+  $('mTaskTitle').textContent='Editar tarea'; $('mTaskId').value=t.id;
+  $('mtName').value=t.name||''; $('mtOwner').value=t.owner||'';
+  $('mtPri').value=t.pri||'Normal'; $('mtDue').value=t.due||'';
+  $('mtSt').value=t.status||'pending'; $('mtDesc').value=t.desc||'';
+  openM('mTask');
+}
+function saveTask(){
+  const name=$('mtName').value.trim();
+  if(!name){toast('El título de la tarea es obligatorio.','err');return;}
+  const tasks=LS('tasks')||[];
+  const id=$('mTaskId').value;
+  const obj={id:id||uid(),name,owner:$('mtOwner').value.trim(),pri:$('mtPri').value,due:$('mtDue').value,status:$('mtSt').value,desc:$('mtDesc').value.trim()};
+  if(id){const idx=tasks.findIndex(t=>t.id===id);if(idx>=0)tasks[idx]=obj;else tasks.push(obj);}
+  else tasks.push(obj);
+  SS('tasks',tasks); cById('mTask'); renderTasks(); renderDash();
+  log(CU,(id?'Editó':'Creó')+' tarea: '+name,'Tareas');
+  toast(id?'Tarea actualizada':'Tarea creada','ok');
+  $('mTaskId').value=''; $('mTaskTitle').textContent='Nueva tarea';
+}
+
+// USER
+function editUser(id){
+  const u=(LS('users')||[]).find(x=>x.id===id); if(!u)return;
+  $('mAuTitle').textContent='Editar usuario'; $('mAuId').value=u.id;
+  $('auFn').value=u.first||''; $('auLn').value=u.last||'';
+  $('auEm').value=u.email||''; $('auPw').value=''; $('auRol').value=u.role||'user';
+  $('auCo').value=u.company||'';
+  openM('mAddUser');
+}
+function saveUser(){
+  const fn=$('auFn').value.trim(), em=$('auEm').value.trim().toLowerCase();
+  const pw=$('auPw').value, rol=$('auRol').value;
+  if(!fn||!em){toast('Nombre y email son obligatorios.','err');return;}
+  const users=LS('users')||[];
+  const id=$('mAuId').value;
+  if(!id&&pw.length<6){toast('La contraseña debe tener al menos 6 caracteres.','err');return;}
+  if(!id&&users.find(u=>u.email===em)){toast('Este email ya está registrado.','err');return;}
+  if(id){
+    const idx=users.findIndex(u=>u.id===id); if(idx<0)return;
+    users[idx].first=fn; users[idx].last=$('auLn').value.trim();
+    users[idx].email=em; users[idx].company=$('auCo').value.trim(); users[idx].role=rol;
+    if(pw.length>=6)users[idx].pass=pw;
+    SS('users',users); cById('mAddUser'); renderUserList(); renderTeam();
+    if(users[idx].id===CU?.id){CU=users[idx];startApp(CU);}
+    log(CU,'Editó usuario: '+em,'Admin'); toast('Usuario actualizado','ok');
+  } else {
+    const nu={id:uid(),email:em,pass:pw,first:fn,last:$('auLn').value.trim(),company:$('auCo').value.trim(),role:rol,active:true,created:now()};
+    users.push(nu); SS('users',users); cById('mAddUser'); renderUserList(); renderTeam();
+    log(CU,'Creó usuario: '+em,'Admin'); toast('Usuario creado','ok');
+  }
+  $('mAuId').value=''; $('mAuTitle').textContent='Agregar usuario';
+}
+
+// ══════════════════════════════════════════════
+//  DELETE (con confirmación)
+// ══════════════════════════════════════════════
+function confirmDel(type,id,label){
+  $('mConfirmTxt').innerHTML=`¿Estás seguro de que deseas eliminar ${label}? <b>Esta acción no se puede deshacer.</b>`;
+  $('mConfirmBtn').onclick=()=>doDelete(type,id);
+  openM('mConfirm');
+}
+function doDelete(type,id){
+  const map={
+    deal:{key:'deals',render:renderPipeline,mod:'Pipeline'},
+    contact:{key:'contacts',render:renderContacts,mod:'Contactos'},
+    invoice:{key:'invoices',render:renderInvoices,mod:'Facturas'},
+    product:{key:'products',render:renderProducts,mod:'Productos'},
+    task:{key:'tasks',render:renderTasks,mod:'Tareas'},
+  };
+  const cfg=map[type]; if(!cfg)return;
+  const arr=LS(cfg.key)||[];
+  const item=arr.find(x=>x.id===id);
+  const newArr=arr.filter(x=>x.id!==id);
+  SS(cfg.key,newArr); cById('mConfirm'); cfg.render();
+  if(item)log(CU,'Eliminó de '+cfg.mod+': '+(item.name||item.fn||item.client||id),cfg.mod);
+  toast('Elemento eliminado','ok'); renderDash();
+}
+
+// ══════════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════════
+function swSet(el,tabId){
+  document.querySelectorAll('.sni').forEach(n=>n.classList.remove('on')); el.classList.add('on');
+  ['sPerfil','sEmp','sNotif','sSeg'].forEach(t=>{const te=$(t);if(te)te.style.display=t===tabId?'block':'none';});
+}
+function saveProfile(){
+  if(!CU)return;
+  const fn=$('setFn').value.trim(), ln=$('setLn').value.trim(), co=$('setCo').value.trim();
+  if(!fn){toast('El nombre es obligatorio.','err');return;}
+  const users=LS('users')||[];
+  const idx=users.findIndex(u=>u.id===CU.id);
+  if(idx>=0){users[idx].first=fn;users[idx].last=ln;users[idx].company=co;SS('users',users);CU=users[idx];}
+  const init=(fn[0]+(ln[0]||'?')).toUpperCase();
+  ['sbava','hdrAva','setAva'].forEach(id=>{const el=$(id);if(el)el.textContent=init;});
+  $('sbuname').textContent=fn+' '+ln;$('ugreet').textContent=fn;
+  log(CU,'Actualizó perfil','Configuración'); toast('Perfil actualizado','ok');
+}
+function saveEmp(){
+  SS('empData',{name:$('empName').value,nit:$('empNit').value,dir:$('empDir').value,web:$('empWeb').value});
+  log(CU,'Actualizó datos empresa','Configuración'); toast('Datos de empresa guardados','ok');
+}
+function changePw(){
+  const p0=$('pw0').value, p1=$('pw1').value, p2=$('pw2').value;
+  if(!p0||!p1){toast('Completa los campos de contraseña.','err');return;}
+  if(CU&&p0!==CU.pass){toast('La contraseña actual es incorrecta.','err');return;}
+  if(p1.length<6){toast('Mínimo 6 caracteres.','err');return;}
+  if(p1!==p2){toast('Las contraseñas no coinciden.','err');return;}
+  const users=LS('users')||[];
+  const idx=users.findIndex(u=>u.id===CU.id);
+  if(idx>=0){users[idx].pass=p1;SS('users',users);CU=users[idx];}
+  $('pw0').value='';$('pw1').value='';$('pw2').value='';
+  log(CU,'Cambió contraseña','Configuración'); toast('Contraseña actualizada','ok');
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function $(id){return document.getElementById(id)}
+function openM(id){$(id).classList.add('on')}
+function cById(id){$(id).classList.remove('on')}
+function cM(e){if(e.target===e.currentTarget)e.currentTarget.classList.remove('on')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.mo.on').forEach(m=>m.classList.remove('on'))});
+function toggleNp(){$('np').classList.toggle('on')}
+document.addEventListener('click',e=>{
+  const np=$('np');
+  if(np&&!np.contains(e.target)&&!e.target.closest('.hbtn'))np.classList.remove('on');
+});
+function stBadge(st){const map={Pagado:'bs-ok',Pendiente:'bs-w',Vencido:'bs-e','En revisión':'bs-i'};return`<span class="bs ${map[st]||'bs-i'}">${st}</span>`}
+function priCls(p){return{Urgente:'bs-e',Normal:'bs-w',Baja:'bs-i'}[p]||'bs-i'}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(msg,type='ok'){const t=$('toast');t.textContent=msg;t.className='toast on '+(type||'');t.style.borderColor=type==='err'?'rgba(239,68,68,.3)':'rgba(48,212,160,.3)';t.style.color=type==='err'?'#fca5a5':'#86efac';clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3000)}
+function log(u,action,mod){if(!u)return;const audit=LS('audit')||[];audit.push({ts:now(),user:u.email,role:u.role==='admin'?'Admin':'Usuario',action,mod});SS('audit',audit);}
+function addNotif(msg){notifs.unshift({msg,ts:now()});renderNotifs();}
+function renderNotifs(){
+  const el=$('npList'),dot=$('notifDot');
+  dot.textContent=notifs.length>9?'9+':notifs.length;
+  if(!notifs.length){el.innerHTML='<div class="empty" style="padding:20px"><i class="ti ti-bell-off" style="font-size:28px;margin-bottom:6px"></i><p>Sin notificaciones</p></div>';return;}
+  el.innerHTML='';
+  notifs.slice(0,8).forEach(n=>{
+    const div=document.createElement('div');div.className='npi';
+    div.innerHTML=`<div class="npdot"></div><div><div class="nptxt"><strong>${n.msg}</strong></div><div class="nptm">${n.ts}</div></div>`;
+    el.appendChild(div);
+  });
+}
+function clearNotifs(){notifs=[];renderNotifs();$('np').classList.remove('on')}
+function globalSrch(q){if(!q)return;const lq=q.toLowerCase();/* simple highlight approach */}
+
+// Connect "Nuevo deal" dash button to openM_Deal
+$('dashCta')?.addEventListener('click',()=>{openM('mDeal');$('mDealTitle').textContent='Nuevo deal';$('mDealId').value='';['mdName','mdClient','mdVal','mdDate','mdOwner','mdNotes'].forEach(id=>{const el=$(id);if(el)el.value='';});$('mdStage').value='Prospecto';});
+
+// ── BOOT ──
+initDB();
+renderNotifs();
+</script>
+</body>
+</html>
